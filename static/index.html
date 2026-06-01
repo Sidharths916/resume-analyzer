@@ -28,7 +28,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
-  .page { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 3rem 3rem 6rem; }
 
   .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 3rem; }
   .logo-mark { width: 32px; height: 32px; background: var(--text); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -46,14 +46,16 @@
   .step-badge { font-size: 11px; font-weight: 600; background: var(--surface2); border: 1px solid var(--border2); color: var(--muted); border-radius: 99px; padding: 3px 10px; letter-spacing: .04em; }
   .step-title { font-size: 15px; font-weight: 500; color: var(--text); }
 
-  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; align-items: start; }
   .input-block { display: flex; flex-direction: column; gap: 8px; }
+  .input-block textarea { flex: 1; }
   .input-block label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
   textarea {
     width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px;
     color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.6;
     padding: 12px 14px; resize: vertical; min-height: 220px; transition: border-color .15s;
   }
+  #resumeText { min-height: 180px; }
   textarea:focus { outline: none; border-color: var(--faint); }
   textarea::placeholder { color: var(--faint); }
 
@@ -156,7 +158,7 @@
     .input-grid { grid-template-columns: 1fr; }
     .scores-row { grid-template-columns: 1fr 1fr; }
     .hero h1 { font-size: 24px; }
-    .page { padding: 2rem 1rem 4rem; }
+    .page { padding: 2rem 1.25rem 4rem; }
   }
 
   /* API key panel */
@@ -201,7 +203,6 @@
       <svg viewBox="0 0 18 18"><path d="M9 1L1 5v8l8 4 8-4V5L9 1zm0 2.2l5.5 2.75L9 8.7 3.5 5.95 9 3.2zM2.5 7.3l6 3v5.2l-6-3V7.3zm7.5 8.2V10.3l6-3v5.2l-6 3z"/></svg>
     </div>
     <span class="logo-name">ResumeAI</span>
-    <span class="logo-tag">— powered by Claude</span>
   </div>
 
   <div class="hero">
