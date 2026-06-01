@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Optimizer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #181818;
+    --surface2: #222222;
+    --border: #2a2a2a;
+    --border2: #333;
+    --text: #f0f0f0;
+    --muted: #888;
+    --faint: #555;
+    --green: #22c55e;
+    --green-bg: #0d2818;
+    --amber: #f59e0b;
+    --amber-bg: #231a08;
+    --red: #ef4444;
+    --red-bg: #200e0e;
+    --blue: #3b82f6;
+    --blue-bg: #0d1829;
+    --accent: #e8e8e8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 3rem; }
+  .logo-mark { width: 32px; height: 32px; background: var(--text); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-mark svg { width: 18px; height: 18px; fill: var(--bg); }
+  .logo-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-tag { font-size: 12px; color: var(--muted); margin-left: 4px; }
+
+  .hero { margin-bottom: 2.5rem; }
+  .hero h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 8px; }
+  .hero p { font-size: 15px; color: var(--muted); max-width: 520px; line-height: 1.6; }
+  .hero .notice { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: var(--green-bg); border: 1px solid #1a4a2a; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: var(--green); }
+  .hero .notice svg { width: 13px; height: 13px; fill: var(--green); flex-shrink: 0; }
+
+  .step-row { display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; }
+  .step-badge { font-size: 11px; font-weight: 600; background: var(--surface2); border: 1px solid var(--border2); color: var(--muted); border-radius: 99px; padding: 3px 10px; letter-spacing: .04em; }
+  .step-title { font-size: 15px; font-weight: 500; color: var(--text); }
+
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .input-block { display: flex; flex-direction: column; gap: 8px; }
+  .input-block label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+  textarea {
+    width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px;
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.6;
+    padding: 12px 14px; resize: vertical; min-height: 220px; transition: border-color .15s;
+  }
+  textarea:focus { outline: none; border-color: var(--faint); }
+  textarea::placeholder { color: var(--faint); }
+
+  .upload-zone {
+    border: 1px dashed var(--border2); border-radius: 10px; background: var(--surface);
+    padding: 2rem 1rem; text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+    position: relative; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  }
+  .upload-zone:hover { border-color: var(--faint); background: var(--surface2); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-zone svg { width: 24px; height: 24px; fill: var(--muted); }
+  .upload-zone p { font-size: 13px; color: var(--muted); }
+  .upload-zone .fname { font-size: 12px; font-weight: 500; color: var(--green); margin-top: 4px; }
+  .mode-toggle { display: flex; gap: 0; border: 1px solid var(--border2); border-radius: 7px; overflow: hidden; width: fit-content; margin-bottom: 10px; }
+  .mode-btn { padding: 5px 14px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: background .12s, color .12s; font-family: 'DM Sans', sans-serif; }
+  .mode-btn.on { background: var(--surface2); color: var(--text); }
+
+  .run-btn {
+    width: 100%; padding: 13px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+    background: var(--text); color: var(--bg); border: none; border-radius: 10px;
+    cursor: pointer; transition: opacity .15s; margin-bottom: 1.5rem; font-family: 'DM Sans', sans-serif;
+  }
+  .run-btn:hover { opacity: .88; }
+  .run-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+  .err-box { background: var(--red-bg); border: 1px solid #4a1a1a; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-bottom: 14px; display: none; }
+  .err-box.on { display: block; }
+
+  .progress-wrap { display: none; margin-bottom: 2rem; }
+  .progress-wrap.on { display: block; }
+  .progress-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .progress-track { height: 2px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--text); border-radius: 99px; width: 0%; transition: width .4s ease; }
+  .progress-steps { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .pstep { font-size: 11px; color: var(--faint); display: flex; align-items: center; gap: 5px; }
+  .pstep.done { color: var(--green); }
+  .pstep.active { color: var(--text); }
+  .pstep svg { width: 11px; height: 11px; }
+
+  .results-wrap { display: none; }
+  .results-wrap.on { display: block; }
+
+  .scores-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .score-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 1rem 1.25rem; }
+  .score-card .num { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; margin-bottom: 3px; }
+  .score-card .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .score-card .bar { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .score-card .bfill { height: 100%; border-radius: 99px; transition: width .6s; }
+  .hi { color: var(--green); } .bhi { background: var(--green); }
+  .mi { color: var(--amber); } .bmi { background: var(--amber); }
+  .lo { color: var(--red); } .blo { background: var(--red); }
+
+  .section { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 12px; }
+  .section h3 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px; }
+  .tag.match { background: var(--green-bg); color: var(--green); border: 1px solid #1a4a2a; }
+  .tag.miss { background: var(--red-bg); color: var(--red); border: 1px solid #4a1a1a; }
+  .tag.partial { background: var(--amber-bg); color: var(--amber); border: 1px solid #4a2e08; }
+
+  .sug-list { list-style: none; }
+  .sug-list li { font-size: 13px; color: var(--muted); padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+  .sug-list li:last-child { border-bottom: none; }
+  .sug-list li::before { content: "→"; color: var(--faint); flex-shrink: 0; }
+
+  .verdict-text { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  .divider { height: 1px; background: var(--border); margin: 2rem 0; }
+
+  .rewritten-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: gap; }
+  .rewritten-header h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .rewritten-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px;
+    background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px;
+    font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer;
+    transition: background .12s; text-decoration: none; font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  }
+  .dl-btn:hover { background: var(--border); }
+  .dl-btn svg { width: 15px; height: 15px; fill: var(--muted); }
+
+  .resume-output {
+    background: var(--surface); border: 1px solid var(--border2); border-radius: 12px;
+    padding: 2rem 2.5rem; font-family: 'DM Mono', monospace; font-size: 12.5px;
+    line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-word;
+    position: relative;
+  }
+  .resume-output .copy-all { position: absolute; top: 12px; right: 12px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 5px 10px; font-size: 11px; color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .resume-output .copy-all:hover { color: var(--text); }
+
+  .ats-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-bg); border: 1px solid #1a4a2a; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: var(--green); margin-top: 10px; }
+  .ats-badge svg { width: 13px; height: 13px; fill: var(--green); }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    .input-grid { grid-template-columns: 1fr; }
+    .scores-row { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 24px; }
+    .page { padding: 2rem 1rem 4rem; }
+  }
+
+  /* API key panel */
+  .apikey-panel {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 2rem;
+  }
+  .apikey-panel .panel-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .apikey-panel .panel-hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+  .apikey-panel .panel-hint a { color: var(--green); }
+  .apikey-input-row { display: flex; gap: 8px; }
+  .apikey-input {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 8px; color: var(--text); font-family: "DM Mono", monospace;
+    font-size: 12px; padding: 9px 12px; transition: border-color .15s;
+  }
+  .apikey-input:focus { outline: none; border-color: var(--faint); }
+  .apikey-input::placeholder { color: var(--faint); }
+  .apikey-save-btn {
+    padding: 9px 16px; font-size: 12px; font-weight: 600;
+    background: var(--green-bg); border: 1px solid #1a4a2a;
+    color: var(--green); border-radius: 8px; cursor: pointer;
+    font-family: "DM Sans", sans-serif; white-space: nowrap; transition: background .15s;
+  }
+  .apikey-save-btn:hover { background: #0f3020; }
+  .apikey-status { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 8px; }
+  .apikey-status .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .status-set .dot { background: var(--green); }
+  .status-unset .dot { background: var(--faint); }
+  .status-set { color: var(--green); }
+  .status-unset { color: var(--faint); }
+  .apikey-clear { background: none; border: none; color: var(--faint); font-size: 11px; cursor: pointer; padding: 0; text-decoration: underline; margin-left: auto; font-family: "DM Sans", sans-serif; }
+  .apikey-clear:hover { color: var(--red); }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18"><path d="M9 1L1 5v8l8 4 8-4V5L9 1zm0 2.2l5.5 2.75L9 8.7 3.5 5.95 9 3.2zM2.5 7.3l6 3v5.2l-6-3V7.3zm7.5 8.2V10.3l6-3v5.2l-6 3z"/></svg>
+    </div>
+    <span class="logo-name">ResumeAI</span>
+    <span class="logo-tag">— powered by Claude</span>
+  </div>
+
+  <div class="hero">
+    <h1>Turn a rough resume into<br>an ATS-ready one.</h1>
+    <p>Paste your messy draft and a job description. We'll rewrite it — stronger bullets, better structure, keyword-optimized — without fabricating a single detail.</p>
+    <div class="notice">
+      <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0V5zm.75 6.5a.875.875 0 110-1.75.875.875 0 010 1.75z"/></svg>
+      Honesty guaranteed — only rewrites what you wrote, never invents
+    </div>
+  </div>
+
+
+  <!-- API KEY PANEL -->
+  <div class="apikey-panel" id="apikey-panel">
+    <div class="panel-title">Your Anthropic API key</div>
+    <p class="panel-hint">
+      This app uses your own key — so usage costs come from your account, not ours.
+      Keys are never stored on any server — they live only in your browser session.<br>
+      Get a free key at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> (new accounts get $5 free credit).
+    </p>
+    <div class="apikey-input-row">
+      <input class="apikey-input" id="apikey-input" type="password"
+        placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+      <button class="apikey-save-btn" onclick="saveKey()">Save key</button>
+    </div>
+    <div class="apikey-status status-unset" id="apikey-status">
+      <span class="dot"></span>
+      <span id="apikey-status-text">No key set — enter yours above</span>
+      <button class="apikey-clear" id="apikey-clear" onclick="clearKey()" style="display:none">Clear</button>
+    </div>
+  </div>
+
+  <div class="step-row"><span class="step-badge">STEP 1</span><span class="step-title">Your inputs</span></div>
+
+  <div class="input-grid">
+    <div class="input-block">
+      <label>Job description</label>
+      <textarea id="jd" placeholder="Paste the full job description here. The more detail, the better the keyword match…"></textarea>
+    </div>
+    <div class="input-block">
+      <label>Your resume</label>
+      <div class="mode-toggle">
+        <button class="mode-btn on" onclick="setMode('text',this)">Paste text</button>
+        <button class="mode-btn" onclick="setMode('pdf',this)">Upload PDF</button>
+      </div>
+      <div id="text-mode">
+        <textarea id="resumeText" placeholder="Paste your existing resume here — even if it's rough, incomplete, or badly formatted. We'll fix it."></textarea>
+      </div>
+      <div id="pdf-mode" style="display:none">
+        <div class="upload-zone">
+          <input type="file" id="pdfInput" accept=".pdf" onchange="handlePDF(this)">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM12 17l-4-4h2.5v-3h3v3H16l-4 4z"/></svg>
+          <p>Click or drag your PDF resume here</p>
+          <div class="fname" id="fname"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="err-box" id="err"></div>
+
+  <div class="step-row" style="margin-top:.5rem"><span class="step-badge">STEP 2</span><span class="step-title">Optimize</span></div>
+  <button class="run-btn" id="runBtn" onclick="runAll()">Analyze & rewrite my resume →</button>
+
+  <div class="progress-wrap" id="progress">
+    <div class="progress-label" id="progLabel">Analyzing match…</div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-steps">
+      <div class="pstep" id="ps1"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="5"/></svg> Analyzing keywords</div>
+      <div class="pstep" id="ps2"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="5"/></svg> Scoring match</div>
+      <div class="pstep" id="ps3"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="5"/></svg> Rewriting bullets</div>
+      <div class="pstep" id="ps4"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="5"/></svg> ATS formatting</div>
+    </div>
+  </div>
+
+  <div class="results-wrap" id="results">
+    <div class="step-row"><span class="step-badge">RESULTS</span><span class="step-title">Match analysis</span></div>
+
+    <div class="scores-row">
+      <div class="score-card"><div class="num" id="s1">—</div><div class="lbl">Overall match</div><div class="bar"><div class="bfill" id="b1" style="width:0%"></div></div></div>
+      <div class="score-card"><div class="num" id="s2">—</div><div class="lbl">Skills match</div><div class="bar"><div class="bfill" id="b2" style="width:0%"></div></div></div>
+      <div class="score-card"><div class="num" id="s3">—</div><div class="lbl">Experience fit</div><div class="bar"><div class="bfill" id="b3" style="width:0%"></div></div></div>
+    </div>
+
+    <div class="section">
+      <h3>Keywords & skills</h3>
+      <div class="tags" id="tagRow"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Present in your resume</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Partially covered</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Missing — added where possible</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>What we improved</h3>
+      <ul class="sug-list" id="suggestions"></ul>
+    </div>
+
+    <div class="section">
+      <h3>Recruiter read</h3>
+      <p class="verdict-text" id="verdict"></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="step-row"><span class="step-badge">STEP 3</span><span class="step-title">Your rewritten resume</span></div>
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+      <div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6">Rewritten for ATS parsers and human recruiters. Every detail is from your original — nothing added that wasn't there.</p>
+        <div class="ats-badge">
+          <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.28 5.28l-4 4a.75.75 0 01-1.06 0l-2-2a.75.75 0 111.06-1.06L6.75 8.69l3.47-3.47a.75.75 0 111.06 1.06z"/></svg>
+          ATS-friendly format — plain text, clean structure, no tables or columns
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="dl-btn" onclick="downloadTxt()">
+          <svg viewBox="0 0 16 16"><path d="M8 1v9.5M4.5 7l3.5 3.5L11.5 7M2 13h12"/></svg>
+          Download .txt
+        </button>
+        <button class="dl-btn" onclick="copyAll()">
+          <svg viewBox="0 0 16 16"><path d="M5 2h7a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1zM3 4H2a1 1 0 00-1 1v9a1 1 0 001 1h8a1 1 0 001-1v-1"/></svg>
+          Copy all
+        </button>
+      </div>
+    </div>
+
+    <div class="resume-output" id="resumeOut"></div>
+  </div>
+
+</div>
+
+<script>
+let pdfBase64 = null;
+
+function setMode(m, btn) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('text-mode').style.display = m === 'text' ? 'block' : 'none';
+  document.getElementById('pdf-mode').style.display = m === 'pdf' ? 'block' : 'none';
+}
+
+function handlePDF(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('fname').textContent = '✓ ' + file.name;
+  const reader = new FileReader();
+  reader.onload = e => { pdfBase64 = e.target.result.split(',')[1]; };
+  reader.readAsDataURL(file);
+}
+
+function sc(n) { return n >= 70 ? 'hi' : n >= 45 ? 'mi' : 'lo'; }
+function bc(n) { return n >= 70 ? 'bhi' : n >= 45 ? 'bmi' : 'blo'; }
+
+function setProgress(pct, label, step) {
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progLabel').textContent = label;
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('ps' + i);
+    el.className = 'pstep' + (i < step ? ' done' : i === step ? ' active' : '');
+  }
+}
+
+function getKey() {
+  return sessionStorage.getItem('resumeai_key') || '';
+}
+
+function saveKey() {
+  const val = document.getElementById('apikey-input').value.trim();
+  if (!val) return;
+  sessionStorage.setItem('resumeai_key', val);
+  document.getElementById('apikey-input').value = '';
+  updateKeyStatus(true);
+}
+
+function clearKey() {
+  sessionStorage.removeItem('resumeai_key');
+  updateKeyStatus(false);
+}
+
+function updateKeyStatus(hasKey) {
+  const st = document.getElementById('apikey-status');
+  const txt = document.getElementById('apikey-status-text');
+  const clr = document.getElementById('apikey-clear');
+  st.className = 'apikey-status ' + (hasKey ? 'status-set' : 'status-unset');
+  txt.textContent = hasKey ? 'API key saved for this session' : 'No key set — enter yours above';
+  clr.style.display = hasKey ? 'inline' : 'none';
+}
+
+// Restore status on load
+if (getKey()) updateKeyStatus(true);
+
+// Allow Enter key to save
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('apikey-input');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
+});
+
+async function callClaude(messages, systemPrompt) {
+  const key = getKey();
+  if (!key) throw new Error('NO_KEY');
+  const body = { model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages };
+  if (systemPrompt) body.system = systemPrompt;
+  const res = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Api-Key': key },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'API error ' + res.status);
+  }
+  const data = await res.json();
+  return data.content;
+}
+
+async function runAll() {
+  const jd = document.getElementById('jd').value.trim();
+  const resumeTxt = document.getElementById('resumeText').value.trim();
+  const isPDF = document.getElementById('pdf-mode').style.display !== 'none';
+  const err = document.getElementById('err');
+  err.className = 'err-box';
+
+  if (!jd) { err.textContent = 'Please paste a job description.'; err.className = 'err-box on'; return; }
+  if (isPDF && !pdfBase64) { err.textContent = 'Please upload your PDF resume.'; err.className = 'err-box on'; return; }
+  if (!isPDF && !resumeTxt) { err.textContent = 'Please paste your resume text.'; err.className = 'err-box on'; return; }
+
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('progress').className = 'progress-wrap on';
+  document.getElementById('results').className = 'results-wrap';
+  setProgress(10, 'Analyzing keyword match…', 1);
+
+  const resumeContent = isPDF
+    ? [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } }, { type: 'text', text: `JOB DESCRIPTION:\n${jd}` }]
+    : `JOB DESCRIPTION:\n${jd}\n\nRESUME:\n${resumeTxt}`;
+
+  try {
+    setProgress(25, 'Scoring match…', 2);
+
+    const analysisSystem = `You are an expert technical recruiter. Analyze the resume against the job description.
+Respond ONLY with valid JSON, no markdown fences, no extra text:
+{"overall":<0-100>,"skills":<0-100>,"experience":<0-100>,"keywords":[{"text":"...","status":"match"|"miss"|"partial"}],"improvements":["..."],"verdict":"..."}
+keywords: 8-12 items. improvements: 4-6 specific things that were done to improve the resume. verdict: 2-3 honest sentences.`;
+
+    const analysisRaw = await callClaude([{ role: 'user', content: resumeContent }], analysisSystem);
+    const analysis = JSON.parse(analysisRaw.replace(/```json|```/g, '').trim());
+
+    setProgress(55, 'Rewriting bullets and structure…', 3);
+
+    const rewriteSystem = `You are an expert resume writer. Rewrite the provided resume to be stronger and ATS-friendly for the given job description.
+
+CRITICAL RULES — violating any of these is unacceptable:
+1. NEVER invent, fabricate, or hallucinate any fact, metric, company, title, technology, date, or achievement not present in the original resume.
+2. You MAY: rephrase weakly-worded bullets with stronger action verbs, reorder sections for better flow, incorporate job description keywords ONLY where genuinely supported by the existing experience, tighten phrasing, remove filler words, fix formatting.
+3. You MAY quantify results only if numbers were already present or can be reasonably inferred from context already in the resume (e.g. if they mention a "team", not fabricate a specific headcount).
+4. Output plain text only — no markdown, no tables, no columns, no special characters except hyphens and pipes for section dividers. ATS parsers need clean text.
+5. Structure order: Name & contact → Summary → Skills → Experience → Projects → Education → Certifications.
+6. Each bullet must start with a strong past-tense action verb.
+7. Keep all original positions, dates, companies, and technologies — do not change factual details.
+
+Return ONLY the rewritten resume text. No preamble, no explanation, no JSON.`;
+
+    const rewriteInput = isPDF
+      ? [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } }, { type: 'text', text: `TARGET JOB DESCRIPTION:\n${jd}\n\nRewrite the resume above following all rules.` }]
+      : `TARGET JOB DESCRIPTION:\n${jd}\n\nORIGINAL RESUME:\n${resumeTxt}\n\nRewrite the resume following all rules.`;
+
+    setProgress(80, 'Formatting for ATS…', 4);
+    const rewritten = await callClaude([{ role: 'user', content: rewriteInput }], rewriteSystem);
+
+    setProgress(100, 'Done!', 5);
+
+    renderAnalysis(analysis);
+    document.getElementById('resumeOut').textContent = rewritten.trim();
+    document.getElementById('results').className = 'results-wrap on';
+
+  } catch (e) {
+    if (e.message === 'NO_KEY') {
+      err.textContent = 'Please enter your Anthropic API key above before running the analysis.';
+      document.getElementById('apikey-input').focus();
+    } else {
+      err.textContent = 'Something went wrong: ' + e.message;
+    }
+    err.className = 'err-box on';
+  } finally {
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('progress').className = 'progress-wrap';
+  }
+}
+
+function renderAnalysis(d) {
+  [['s1','b1',d.overall],['s2','b2',d.skills],['s3','b3',d.experience]].forEach(([v,b,n]) => {
+    const el = document.getElementById(v); el.textContent = n + '%'; el.className = 'num ' + sc(n);
+    const bar = document.getElementById(b); bar.style.width = n + '%'; bar.className = 'bfill ' + bc(n);
+  });
+  const tr = document.getElementById('tagRow'); tr.innerHTML = '';
+  (d.keywords || []).forEach(k => {
+    const s = document.createElement('span');
+    s.className = 'tag ' + (k.status || 'miss');
+    s.textContent = k.text;
+    tr.appendChild(s);
+  });
+  const ul = document.getElementById('suggestions'); ul.innerHTML = '';
+  (d.improvements || []).forEach(s => {
+    const li = document.createElement('li'); li.textContent = s; ul.appendChild(li);
+  });
+  document.getElementById('verdict').textContent = d.verdict || '';
+}
+
+function downloadTxt() {
+  const text = document.getElementById('resumeOut').textContent;
+  if (!text) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+  a.download = 'resume_optimized.txt';
+  a.click();
+}
+
+function copyAll() {
+  const text = document.getElementById('resumeOut').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target.closest('.dl-btn');
+    const orig = btn.innerHTML;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.innerHTML = orig, 1500);
+  });
+}
+</script>
+</body>
+</html>
