@@ -38,8 +38,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
-.app-shell.visible{background:transparent}
+body{background:#080810;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
 
 /* ── LIQUID GLASS ── */
 .liquid-glass{background:rgba(255,255,255,.01);background-blend-mode:luminosity;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.1);position:relative;overflow:hidden}
@@ -72,7 +71,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .hero-cta-main:hover{transform:scale(1.03)}
 
 /* ── NAV ── */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;background:rgba(8,8,16,.95);backdrop-filter:blur(24px)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:100;background:rgba(5,5,12,.85);backdrop-filter:blur(24px)}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
 .logo-img{width:26px;height:26px;border-radius:6px;object-fit:contain}
 .logo-name{font-family:var(--font-display);font-size:1.3rem;letter-spacing:-.02em;color:#fff}
@@ -84,7 +83,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 /* ── MAIN APP SHELL ── */
 .app-shell{display:none}
 .app-shell.visible{display:block}
-.page{display:none;max-width:1100px;margin:0 auto;padding:3rem 2.5rem 6rem}
+.page{display:none;max-width:1100px;margin:0 auto;padding:3rem 2.5rem 6rem;position:relative;z-index:1}
 .page.active{display:block}
 
 /* ── PAGE HEADER ── */
@@ -345,11 +344,11 @@ select option{background:var(--surface2)}
 <!-- ══════════════════ APP SHELL ══════════════════ -->
 <div class="app-shell" id="appShell">
   <!-- Persistent video background behind app -->
-  <div style="position:fixed;inset:0;z-index:-1;overflow:hidden">
-    <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;opacity:.18">
+  <div style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none">
+    <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;opacity:1">
       <source src="https://res.cloudinary.com/dfonotyfb/video/upload/v1775585556/dds3_1_rqhg7x.mp4" type="video/mp4">
     </video>
-    <div style="position:absolute;inset:0;background:rgba(8,8,16,.82)"></div>
+    <div style="position:absolute;inset:0;background:rgba(5,5,12,.88)"></div>
   </div>
 
   <nav class="nav">
