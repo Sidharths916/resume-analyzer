@@ -8,6 +8,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root { --font-display: 'Instrument Serif', serif; --font-body: 'Inter', sans-serif; }
+
+/* ── TIER SELECTOR ── */
+.tier-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem}
+.tier-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;position:relative}
+.tier-card:hover{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.05)}
+.tier-card.active{border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.07)}
+.tier-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.tier-check{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;transition:all .2s;margin-top:2px}
+.tier-card.active .tier-check{background:var(--blue);border-color:var(--blue);color:#fff}
+.tier-name{font-size:14px;font-weight:500;color:#fff;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.tier-badge-free{font-size:9px;font-weight:600;letter-spacing:.08em;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:var(--green);padding:2px 7px;border-radius:99px}
+.tier-badge-pro{font-size:9px;font-weight:600;letter-spacing:.08em;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--blue-light);padding:2px 7px;border-radius:99px}
+.tier-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+.tier-perks{display:flex;gap:10px;flex-wrap:wrap}
+.tier-perks span{font-size:11px;color:rgba(255,255,255,.35)}
+.tier-key-row{display:flex;gap:8px;margin-top:12px}
+@media(max-width:600px){.tier-wrap{grid-template-columns:1fr}}
 </style>
 <style>
 :root {
@@ -375,17 +392,54 @@ select option{background:var(--surface2)}
       <p>Senior recruiter scan · XYZ rewrites · ATS simulation · 7-second check · Optional mock interview</p>
     </div>
 
-    <div class="apikey-panel">
-      <div class="panel-title">Your Anthropic API key</div>
-      <p class="panel-hint">Your key stays in your browser session only — never sent to our servers. Get a free key at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> (new accounts get $5 credit).</p>
-      <div class="apikey-row">
-        <input class="apikey-input" id="apikey-input" type="password" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-        <button class="btn-save-key" onclick="saveKey()">Save key</button>
+    <!-- TIER SELECTOR -->
+    <div class="tier-wrap">
+      <!-- FREE CARD -->
+      <div class="tier-card active" id="tier-free" onclick="setTier('free')">
+        <div class="tier-top">
+          <div class="tier-check" id="check-free">
+            <svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="tier-name">Free <span class="tier-badge-free">GEMINI FLASH</span></div>
+            <div class="tier-desc">Powered by Google Gemini 2.0 Flash — no account needed, instant access</div>
+          </div>
+        </div>
+        <div class="tier-perks">
+          <span>✓ Unlimited analyses</span>
+          <span>✓ All features</span>
+          <span>✓ No sign-up</span>
+        </div>
       </div>
-      <div class="key-status key-unset" id="key-status">
-        <span class="dot"></span>
-        <span id="key-status-text">No key set — enter yours above</span>
-        <button class="btn-clear-key" id="btn-clear-key" onclick="clearKey()" style="display:none">Clear</button>
+
+      <!-- PRO CARD -->
+      <div class="tier-card" id="tier-pro" onclick="setTier('pro')">
+        <div class="tier-top">
+          <div class="tier-check" id="check-pro">
+            <svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="tier-name">Pro <span class="tier-badge-pro">CLAUDE SONNET</span></div>
+            <div class="tier-desc">Anthropic Claude — deeper analysis, sharper rewrites, better interview coaching</div>
+          </div>
+        </div>
+        <div class="tier-perks">
+          <span>✓ More nuanced output</span>
+          <span>✓ Your API key</span>
+          <span>✓ ~$0.02/analysis</span>
+        </div>
+        <div class="tier-key-row" id="pro-key-row" style="display:none">
+          <input class="apikey-input" id="apikey-input" type="password" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+          <button class="btn-save-key" onclick="saveKey()">Save</button>
+        </div>
+        <div class="key-status key-unset" id="key-status" style="display:none">
+          <span class="dot"></span>
+          <span id="key-status-text">No key set</span>
+          <button class="btn-clear-key" id="btn-clear-key" onclick="clearKey()" style="display:none">Clear</button>
+        </div>
+        <div style="margin-top:8px;display:none" id="pro-key-hint">
+          <a href="https://console.anthropic.com" target="_blank" rel="noopener" style="font-size:11px;color:rgba(255,255,255,.3)">Get a free key at console.anthropic.com →</a>
+        </div>
       </div>
     </div>
 
@@ -626,13 +680,35 @@ function switchPage(id, btn) {
   window.scrollTo(0,0);
 }
 
-// ── API KEY ──
+// ── TIER + API KEY ──
+let currentTier = 'free';
+
+function setTier(t) {
+  currentTier = t;
+  document.getElementById('tier-free').classList.toggle('active', t === 'free');
+  document.getElementById('tier-pro').classList.toggle('active', t === 'pro');
+  const proRow = document.getElementById('pro-key-row');
+  const proHint = document.getElementById('pro-key-hint');
+  const keyStatus = document.getElementById('key-status');
+  if (t === 'pro') {
+    proRow.style.display = 'flex';
+    proHint.style.display = 'block';
+    keyStatus.style.display = 'flex';
+  } else {
+    proRow.style.display = 'none';
+    proHint.style.display = 'none';
+    keyStatus.style.display = 'none';
+  }
+  syncKeyStatus();
+}
+
 function getKey() { return sessionStorage.getItem('resumeai_key') || ''; }
 function saveKey() {
-  const val = document.getElementById('apikey-input').value.trim();
+  const inp = document.getElementById('apikey-input');
+  const val = inp ? inp.value.trim() : '';
   if (!val) return;
   sessionStorage.setItem('resumeai_key', val);
-  document.getElementById('apikey-input').value = '';
+  inp.value = '';
   updateKeyStatus(true); syncKeyStatus();
 }
 function clearKey() {
@@ -643,21 +719,28 @@ function updateKeyStatus(has) {
   const st = document.getElementById('key-status');
   const txt = document.getElementById('key-status-text');
   const clr = document.getElementById('btn-clear-key');
+  if (!st) return;
   st.className = 'key-status ' + (has ? 'key-set' : 'key-unset');
-  txt.textContent = has ? 'API key saved for this session' : 'No key set — enter yours above';
-  clr.style.display = has ? 'inline' : 'none';
+  if (txt) txt.textContent = has ? 'Claude key saved ✓' : 'No key set';
+  if (clr) clr.style.display = has ? 'inline' : 'none';
 }
 function syncKeyStatus() {
   const has = !!getKey();
+  const isPro = currentTier === 'pro';
   ['cover','li','sg'].forEach(id => {
     const el = document.getElementById(id+'-key-status');
     const tx = document.getElementById(id+'-key-text');
     if (!el) return;
-    el.className = 'key-status ' + (has ? 'key-set' : 'key-unset');
-    if (tx) tx.textContent = has ? 'API key active' : 'No key set — go to Optimizer tab';
+    if (currentTier === 'free') {
+      el.className = 'key-status key-set';
+      if (tx) tx.textContent = 'Free tier active (Gemini)';
+    } else {
+      el.className = 'key-status ' + (has ? 'key-set' : 'key-unset');
+      if (tx) tx.textContent = has ? 'Claude key active' : 'No Claude key — go to Optimizer tab';
+    }
   });
 }
-if (getKey()) { updateKeyStatus(true); syncKeyStatus(); }
+if (getKey()) { updateKeyStatus(true); }
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('apikey-input');
   if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
@@ -680,15 +763,15 @@ function handlePDF(input) {
 
 // ── CLAUDE API ──
 async function callClaude(messages, systemPrompt, maxTokens=4000) {
+  const tier = currentTier;
   const key = getKey();
-  if (!key) throw new Error('NO_KEY');
-  const body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens, messages };
+  if (tier === 'pro' && !key) throw new Error('PRO_NO_KEY');
+  const model = tier === 'pro' ? 'claude-sonnet-4-20250514' : 'gemini-2.0-flash';
+  const body = { model, max_tokens: maxTokens, messages };
   if (systemPrompt) body.system = systemPrompt;
-  const res = await fetch('/api/analyze', {
-    method:'POST',
-    headers:{'Content-Type':'application/json','X-Api-Key':key},
-    body:JSON.stringify(body)
-  });
+  const headers = { 'Content-Type': 'application/json', 'X-Tier': tier };
+  if (tier === 'pro' && key) headers['X-Api-Key'] = key;
+  const res = await fetch('/api/analyze', { method:'POST', headers, body:JSON.stringify(body) });
   if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.detail||'API error '+res.status); }
   return (await res.json()).content;
 }
@@ -779,7 +862,7 @@ rewrites: 2-3 bullets needing first-2-words treatment.`;
     setProgress(100,'Done!',6);
 
   } catch(e) {
-    err.textContent = e.message==='NO_KEY' ? 'Please enter your Anthropic API key.' : 'Error: '+e.message;
+    err.textContent = e.message==='PRO_NO_KEY' ? 'Pro mode: please enter your Anthropic key in the Pro card above.' : 'Error: '+e.message;
     err.className = 'err-box on';
   } finally {
     document.getElementById('runBtn').disabled = false;
@@ -913,7 +996,7 @@ async function generateCoverLetter() {
   const tone=document.getElementById('cover-tone').value;
   const btn=document.getElementById('coverBtn');
   if(!jd||!resume){alert('Please fill in both fields.');return;}
-  if(!getKey()){alert('Please set your API key on the Optimizer tab.');return;}
+  
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Writing…';
   const result=document.getElementById('cover-result'); result.className='tool-result'; result.textContent='';
   const sys=`Write a tailored cover letter for ${name}. Tone: ${tone}. 3-4 paragraphs. Opening: immediately state why this specific role at this company — no generic openers. Middle: 2-3 specific achievements from the resume that address JD requirements — real numbers if present. Closing: confident, not begging. No "I am writing to express interest." No "Please find attached." Sound like a real person. Return only the letter text.`;
@@ -934,7 +1017,7 @@ async function generateLinkedIn() {
   const current=document.getElementById('li-current').value.trim();
   const btn=document.getElementById('liBtn');
   if(!jd||!current){alert('Please fill in both fields.');return;}
-  if(!getKey()){alert('Please set your API key on the Optimizer tab.');return;}
+  
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Rewriting…';
   const result=document.getElementById('li-result'); result.className='tool-result'; result.textContent='';
   const sys=`LinkedIn profile expert. Rewrite for target role. Output three sections:
@@ -994,7 +1077,7 @@ async function skillGap() {
   const resume=document.getElementById('sg-resume').value.trim();
   const btn=document.getElementById('sgBtn');
   if(!jd||!resume){alert('Please fill in both fields.');return;}
-  if(!getKey()){alert('Please set your API key on the Optimizer tab.');return;}
+  
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Analyzing…';
   const sys=`Analyze gap between resume and JD. Respond ONLY with JSON:
 {"present":["skill"],"gaps":[{"skill":"...","priority":"high|medium|low","description":"why it matters","resource":"best free way to learn — specific name"}]}
