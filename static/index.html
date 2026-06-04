@@ -11,7 +11,7 @@
 
 /* ── TIER SELECTOR ── */
 .tier-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem}
-.tier-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;position:relative;backdrop-filter:blur(12px)}
+.tier-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;position:relative;}
 .tier-card:hover{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.05)}
 .tier-card.active{border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.07)}
 .tier-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
@@ -54,8 +54,8 @@
   --grad: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;background:#05050c}
-body{background:transparent;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+html{scroll-behavior:smooth}
+body{background:#05050c;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
 
 /* ── LIQUID GLASS ── */
 .liquid-glass{background:rgba(255,255,255,.01);background-blend-mode:luminosity;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.1);position:relative;overflow:hidden}
@@ -88,7 +88,7 @@ body{background:transparent;color:var(--text);font-family:'Inter',sans-serif;fon
 .hero-cta-main:hover{transform:scale(1.03)}
 
 /* ── NAV ── */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:102;background:rgba(5,5,12,.75);backdrop-filter:blur(28px)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:102;background:rgba(5,5,12,.75);}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
 .logo-img{width:26px;height:26px;border-radius:6px;object-fit:contain}
 .logo-name{font-family:var(--font-display);font-size:1.3rem;letter-spacing:-.02em;color:#fff}
@@ -99,7 +99,7 @@ body{background:transparent;color:var(--text);font-family:'Inter',sans-serif;fon
 
 /* ── MAIN APP SHELL ── */
 .app-shell{display:none}
-.app-shell.visible{display:block}
+.app-shell.visible{display:block;position:relative;z-index:1;min-height:100vh}
 .page{display:none;max-width:1100px;margin:0 auto;padding:3rem 2.5rem 6rem;position:relative;z-index:2}
 .page.active{display:block}
 
@@ -110,7 +110,7 @@ body{background:transparent;color:var(--text);font-family:'Inter',sans-serif;fon
 .page-header p{font-size:14px;color:rgba(255,255,255,.4);max-width:500px;line-height:1.65}
 
 /* ── API KEY PANEL ── */
-.apikey-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;backdrop-filter:blur(12px)}
+.apikey-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;}
 .panel-title{font-size:13px;font-weight:500;color:#fff;margin-bottom:5px}
 .panel-hint{font-size:12px;color:rgba(255,255,255,.35);line-height:1.55;margin-bottom:10px}
 .panel-hint a{color:var(--blue-light)}
@@ -213,7 +213,7 @@ select option{background:var(--surface2)}
 .results-wrap{display:none}.results-wrap.on{display:block}
 /* ── SCORE CARDS ── */
 .scores-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-.score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:1rem 1.25rem;backdrop-filter:blur(10px)}
+.score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:1rem 1.25rem;}
 .score-card .num{font-family:var(--font-display);font-size:32px;font-weight:400;line-height:1;margin-bottom:4px}
 .score-card .lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em}
 .score-card .bar{height:1px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin-top:12px}
@@ -222,7 +222,7 @@ select option{background:var(--surface2)}
 .mi{color:var(--amber)}.bmi{background:var(--amber)}
 .lo{color:var(--red)}.blo{background:var(--red)}
 /* ── SECTION CARDS ── */
-.section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:10px;backdrop-filter:blur(10px)}
+.section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:10px;}
 .section h3{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
 /* ── DEEP ANALYSIS ── */
 .deep-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -284,7 +284,7 @@ select option{background:var(--surface2)}
 .tool-hero{margin-bottom:2.5rem}
 .tool-hero h2{font-family:var(--font-display);font-size:clamp(26px,3vw,38px);font-weight:400;letter-spacing:-.02em;margin-bottom:8px;color:#fff}
 .tool-hero p{font-size:14px;color:rgba(255,255,255,.4);max-width:480px;line-height:1.6}
-.tool-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.5rem;margin-bottom:1rem;backdrop-filter:blur(12px)}
+.tool-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.5rem;margin-bottom:1rem;}
 .tool-result{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.5rem 2rem;font-size:14px;line-height:1.8;color:rgba(255,255,255,.6);white-space:pre-wrap;word-break:break-word;display:none;margin-top:10px}
 .tool-result.on{display:block}
 .tool-btn{padding:11px 26px;font-family:var(--font-display);font-size:16px;font-weight:400;background:#fff;color:#080810;border:none;border-radius:8px;cursor:pointer;transition:all .2s}
@@ -324,11 +324,11 @@ select option{background:var(--surface2)}
 <body>
 
 <!-- ══ PERSISTENT APP VIDEO BG (always in DOM, shown when app is active) ══ -->
-<div id="appVideoBg" style="display:none;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none">
-  <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover">
+<div id="appVideoBg" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none">
+  <video id="appBgVideo" autoplay loop muted playsinline style="position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;transform:translate(-50%,-50%);object-fit:cover">
     <source src="https://res.cloudinary.com/dfonotyfb/video/upload/v1775585556/dds3_1_rqhg7x.mp4" type="video/mp4">
   </video>
-  <div style="position:absolute;inset:0;background:rgba(5,5,12,.72)"></div>
+  <div style="position:absolute;inset:0;background:rgba(4,4,11,.80)"></div>
 </div>
 
 <!-- ══════════════════ HERO ══════════════════ -->
@@ -658,11 +658,17 @@ let interviewState = { active:false, history:[], questionNum:0, totalQ:7, jd:'',
 // ── HERO / APP TRANSITION ──
 function enterApp() {
   document.getElementById('heroSection').style.display = 'none';
-  document.getElementById('appVideoBg').style.display = 'block';
+  document.body.style.background = 'transparent';
+  const vb = document.getElementById('appVideoBg');
+  vb.style.display = 'block';
+  // ensure video plays (browsers sometimes pause on hidden elements)
+  const vid = document.getElementById('appBgVideo');
+  if (vid) { vid.load(); vid.play().catch(()=>{}); }
   document.getElementById('appShell').classList.add('visible');
   window.scrollTo(0,0);
 }
 function goHero() {
+  document.body.style.background = '#05050c';
   document.getElementById('heroSection').style.display = 'flex';
   document.getElementById('appVideoBg').style.display = 'none';
   document.getElementById('appShell').classList.remove('visible');
