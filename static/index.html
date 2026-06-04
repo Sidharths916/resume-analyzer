@@ -26,54 +26,73 @@
 .tier-key-row{display:flex;gap:8px;margin-top:12px}
 @media(max-width:600px){.tier-wrap{grid-template-columns:1fr}}
 
-/* ── APP ANIMATED BG ── */
+/* ── APP ANIMATED BG — matches hero palette ── */
 .app-bg-canvas {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(30,20,80,.7) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(10,40,80,.6) 0%, transparent 60%),
-    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(5,10,40,.9) 0%, transparent 70%),
-    linear-gradient(180deg, #02020e 0%, #050518 40%, #030312 100%);
-  animation: bg-shift 12s ease-in-out infinite alternate;
+    radial-gradient(ellipse 90% 60% at 15% 30%, rgba(0,60,80,.85) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 20%, rgba(0,45,65,.7) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 85%, rgba(180,80,10,.12) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 30% 90%, rgba(200,100,20,.08) 0%, transparent 50%),
+    linear-gradient(180deg, #001a24 0%, #002535 35%, #001520 70%, #000d16 100%);
+  animation: hero-bg-drift 14s ease-in-out infinite alternate;
 }
+/* warm amber glow at bottom — matches the lantern/flower warmth from hero video */
 .app-bg-canvas::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 40% 30% at 70% 20%, rgba(59,130,246,.08) 0%, transparent 60%),
-    radial-gradient(ellipse 30% 20% at 20% 80%, rgba(99,102,241,.06) 0%, transparent 60%);
-  animation: bg-shift2 8s ease-in-out infinite alternate;
+    radial-gradient(ellipse 80% 25% at 50% 105%, rgba(200,100,20,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 20% at 20% 95%, rgba(180,80,10,.12) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 15% at 80% 100%, rgba(160,70,10,.1) 0%, transparent 50%);
+  animation: warm-pulse 8s ease-in-out infinite alternate;
 }
+/* star field — same dot-scatter as the hero night sky */
 .app-bg-canvas::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.15) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,.12) 0%, transparent 100%),
-    radial-gradient(1px 1px at 60% 50%, rgba(255,255,255,.08) 0%, transparent 100%),
-    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,.07) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 35% 15%, rgba(255,255,255,.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 75% 65%, rgba(255,255,255,.09) 0%, transparent 100%);
+    radial-gradient(1.5px 1.5px at 8%  12%, rgba(255,255,255,.55) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 23% 7%,  rgba(255,255,255,.4)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 45% 18%, rgba(255,255,255,.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 67% 5%,  rgba(255,255,255,.5)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 82% 14%, rgba(255,255,255,.3)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 91% 28%, rgba(255,255,255,.4)  0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 13% 35%, rgba(255,255,255,.45) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 55% 42%, rgba(255,255,255,.25) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 76% 38%, rgba(255,255,255,.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 33% 55%, rgba(255,255,255,.2)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 88% 52%, rgba(255,255,255,.3)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 5%  65%, rgba(255,255,255,.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 22%, rgba(255,255,255,.5)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 40% 8%,  rgba(255,255,255,.3)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 95% 45%, rgba(255,255,255,.2)  0%, transparent 100%);
+  animation: star-twinkle 6s ease-in-out infinite alternate;
 }
-@keyframes bg-shift {
-  0% { background-position: 0% 0%; }
+@keyframes hero-bg-drift {
+  0%   { background-position: 0% 0%; filter: brightness(1); }
+  50%  { filter: brightness(1.05); }
   100% {
     background:
-      radial-gradient(ellipse 80% 50% at 30% 50%, rgba(30,20,80,.65) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 70% 40%, rgba(10,40,80,.55) 0%, transparent 60%),
-      radial-gradient(ellipse 100% 80% at 50% 100%, rgba(5,10,40,.9) 0%, transparent 70%),
-      linear-gradient(180deg, #02020e 0%, #050518 40%, #030312 100%);
+      radial-gradient(ellipse 90% 60% at 25% 20%, rgba(0,60,80,.8) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 75% 30%, rgba(0,45,65,.65) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 60% 90%, rgba(180,80,10,.14) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 30% at 20% 85%, rgba(200,100,20,.1) 0%, transparent 50%),
+      linear-gradient(180deg, #001a24 0%, #002535 35%, #001520 70%, #000d16 100%);
+    filter: brightness(1);
   }
 }
-@keyframes bg-shift2 {
-  0% { opacity: 1; }
-  50% { opacity: .5; }
+@keyframes warm-pulse {
+  0%   { opacity: .7; }
   100% { opacity: 1; }
+}
+@keyframes star-twinkle {
+  0%   { opacity: .6; }
+  50%  { opacity: 1; }
+  100% { opacity: .75; }
 }
 </style>
 <style>
