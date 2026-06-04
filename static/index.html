@@ -25,6 +25,56 @@
 .tier-perks span{font-size:11px;color:rgba(255,255,255,.35)}
 .tier-key-row{display:flex;gap:8px;margin-top:12px}
 @media(max-width:600px){.tier-wrap{grid-template-columns:1fr}}
+
+/* ── APP ANIMATED BG ── */
+.app-bg-canvas {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(30,20,80,.7) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(10,40,80,.6) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(5,10,40,.9) 0%, transparent 70%),
+    linear-gradient(180deg, #02020e 0%, #050518 40%, #030312 100%);
+  animation: bg-shift 12s ease-in-out infinite alternate;
+}
+.app-bg-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 40% 30% at 70% 20%, rgba(59,130,246,.08) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 20% at 20% 80%, rgba(99,102,241,.06) 0%, transparent 60%);
+  animation: bg-shift2 8s ease-in-out infinite alternate;
+}
+.app-bg-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 50%, rgba(255,255,255,.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,.07) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 15%, rgba(255,255,255,.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 65%, rgba(255,255,255,.09) 0%, transparent 100%);
+}
+@keyframes bg-shift {
+  0% { background-position: 0% 0%; }
+  100% {
+    background:
+      radial-gradient(ellipse 80% 50% at 30% 50%, rgba(30,20,80,.65) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 70% 40%, rgba(10,40,80,.55) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 80% at 50% 100%, rgba(5,10,40,.9) 0%, transparent 70%),
+      linear-gradient(180deg, #02020e 0%, #050518 40%, #030312 100%);
+  }
+}
+@keyframes bg-shift2 {
+  0% { opacity: 1; }
+  50% { opacity: .5; }
+  100% { opacity: 1; }
+}
 </style>
 <style>
 :root {
@@ -324,11 +374,8 @@ select option{background:var(--surface2)}
 <body>
 
 <!-- ══ PERSISTENT APP VIDEO BG (always in DOM, shown when app is active) ══ -->
-<div id="appVideoBg" style="opacity:0;visibility:hidden;position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;transition:opacity .6s ease">
-  <video id="appBgVideo" autoplay loop muted playsinline preload="auto" crossorigin="anonymous" style="position:absolute;top:50%;left:50%;width:100%;height:100%;object-fit:cover;transform:translate(-50%,-50%)">
-    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4">
-  </video>
-  <div style="position:absolute;inset:0;background:rgba(4,4,11,.60)"></div>
+<div id="appVideoBg" style="opacity:0;visibility:hidden;position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;transition:opacity .8s ease">
+  <div class="app-bg-canvas"></div>
 </div>
 
 <!-- ══════════════════ HERO ══════════════════ -->
@@ -1104,16 +1151,6 @@ gaps: 5-8 items by priority. Specific resources only.`;
   } catch(e){alert('Error: '+e.message);}
   finally{btn.disabled=false;btn.textContent='Analyze skill gaps →';}
 }
-</script>
-<script>
-// Pre-warm the app background video as soon as page loads
-window.addEventListener('load', function() {
-  const vid = document.getElementById('appBgVideo');
-  if (vid) {
-    vid.muted = true;
-    vid.play().catch(function(){});
-  }
-});
 </script>
 </body>
 </html>
