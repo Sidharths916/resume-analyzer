@@ -1,12 +1,13 @@
 import os
-import anthropic
 import httpx
-import json
+import anthropic
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Any
+from datetime import date
+from collections import defaultdict
 
 app = FastAPI(title="Jobify API")
 
@@ -18,6 +19,20 @@ app.add_middleware(
 )
 
 SERVER_GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
+DAILY_CAP = 200
+
+# Simple in-memory daily counter — resets when server restarts (free tier restarts daily anyway)
+_usage = defaultdict(int)  # key: date string → count
+
+def check_and_increment() -> bool:
+    today = str(date.today())
+    if _usage[today] >= DAILY_CAP:
+        return False
+    _usage[today] += 1
+    return True
+
+def get_usage_today() -> int:
+    return _usage[str(date.today())]
 
 
 class MessageRequest(BaseModel):
@@ -28,7 +43,6 @@ class MessageRequest(BaseModel):
 
 
 def extract_text(messages: list[Any]) -> str:
-    """Flatten messages into a single text prompt for Gemini."""
     parts = []
     for m in messages:
         role = m.get("role", "user")
@@ -41,7 +55,7 @@ def extract_text(messages: list[Any]) -> str:
                     if block.get("type") == "text":
                         parts.append(f"[{role}]: {block['text']}")
                     elif block.get("type") == "document":
-                        parts.append(f"[{role}]: [PDF document attached — analyze the resume content within it]")
+                        parts.append(f"[{role}]: [PDF resume uploaded — analyze it as the candidate's resume]")
     return "\n\n".join(parts)
 
 
@@ -50,25 +64,30 @@ async def call_gemini(req: MessageRequest) -> str:
     if not key:
         raise HTTPException(status_code=503, detail="Free tier temporarily unavailable. Please use Pro (Claude) mode.")
 
-    prompt_text = extract_text(req.messages)
-    system_part = f"{req.system}\n\n" if req.system else ""
-    full_prompt = system_part + prompt_text
+    if not check_and_increment():
+        raise HTTPException(
+            status_code=429,
+            detail=f"Free tier daily limit reached ({DAILY_CAP} analyses/day). Try again tomorrow or switch to Pro."
+        )
 
+    prompt_text = extract_text(req.messages)
+    full_prompt = (f"{req.system}\n\n" if req.system else "") + prompt_text
+
+    # Try v1beta REST endpoint — works with both AIzaSy and AQ. key formats
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={key}"
     payload = {
         "contents": [{"parts": [{"text": full_prompt}]}],
-        "generationConfig": {
-            "maxOutputTokens": req.max_tokens,
-            "temperature": 0.3,
-        }
+        "generationConfig": {"maxOutputTokens": req.max_tokens, "temperature": 0.3},
     }
 
     async with httpx.AsyncClient(timeout=120) as client:
         resp = await client.post(url, json=payload)
 
     if resp.status_code != 200:
-        detail = resp.json().get("error", {}).get("message", "Gemini API error")
-        raise HTTPException(status_code=502, detail=f"Free tier error: {detail}")
+        err = resp.json().get("error", {})
+        msg = err.get("message", "Gemini API error")
+        code = err.get("code", resp.status_code)
+        raise HTTPException(status_code=502, detail=f"Free tier error ({code}): {msg}")
 
     data = resp.json()
     try:
@@ -79,7 +98,7 @@ async def call_gemini(req: MessageRequest) -> str:
 
 async def call_claude(req: MessageRequest, api_key: str) -> str:
     if not api_key.startswith("sk-ant-"):
-        raise HTTPException(status_code=400, detail="Invalid Anthropic key. Keys start with sk-ant-")
+        raise HTTPException(status_code=400, detail="Invalid Anthropic key — should start with sk-ant-")
     try:
         client = anthropic.Anthropic(api_key=api_key)
         kwargs = dict(model=req.model, max_tokens=req.max_tokens, messages=req.messages)
@@ -100,22 +119,19 @@ async def analyze(
     x_tier: str | None = Header(default="free"),
 ):
     tier = (x_tier or "free").lower()
-
     if tier == "pro":
         if not x_api_key:
             raise HTTPException(status_code=401, detail="Pro mode requires your Anthropic API key.")
         result = await call_claude(req, x_api_key)
     else:
-        # Free tier — use server Gemini key, swap model name to gemini
         req.model = "gemini-2.0-flash"
         result = await call_gemini(req)
-
     return {"content": result}
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "free_tier_used_today": get_usage_today(), "daily_cap": DAILY_CAP}
 
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
