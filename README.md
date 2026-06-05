@@ -1,81 +1,72 @@
-# Resume Optimizer
+# Jobsy — AI Resume Optimizer
 
-An AI-powered resume optimizer built with FastAPI + Claude (Anthropic API).
+> Turn a rough resume into an ATS-ready one. Free, no sign-up required.
 
-Paste a rough resume and a job description → get a match score, keyword gap analysis, and a fully rewritten ATS-friendly resume. **Never fabricates details** — only rewrites what you wrote.
-
-## Features
-
-- Match scoring (overall, skills, experience)
-- Keyword gap analysis with color-coded tags
-- Full resume rewrite with stronger action verbs and ATS-friendly formatting
-- PDF upload or text paste
-- Download rewritten resume as .txt
+**Live at:** [jobsy-g0xw.onrender.com](https://jobsy-g0xw.onrender.com)
 
 ---
 
-## Local Development
+## What it does
 
-```bash
-# 1. Clone and enter the project
-git clone https://github.com/YOUR_USERNAME/resume-analyzer
-cd resume-analyzer
+Jobsy runs your resume through a 4-stage AI pipeline modelled on how real recruiters and ATS systems evaluate candidates:
 
-# 2. Install dependencies
-pip install -r requirements.txt
+**Stage 1 — Senior recruiter scan**
+Match score out of 100, top 10 missing keywords with placement suggestions, 5 red flags a hiring manager spots in the first 10 seconds, section-by-section scores (Summary, Experience, Skills, Education), and the single most important ATS change you can make right now.
 
-# 3. Set your Anthropic API key
-export ANTHROPIC_API_KEY=sk-ant-...   # Mac/Linux
-set ANTHROPIC_API_KEY=sk-ant-...      # Windows
+**Stage 2 — Google XYZ rewrite**
+Every bullet rewritten using the formula: *Accomplished [X] as measured by [Y] by doing [Z].* Missing keywords woven in naturally. Every vague phrase made specific. Summary rewritten as a 3-sentence pitch. Skills updated to match the JD. Nothing fabricated — only rewrites what you wrote.
 
-# 4. Run
-uvicorn server:app --reload
+**Stage 3 — ATS simulation + 7-second scan**
+New match score after rewrite. Formatting issues flagged. Sections that would get skipped identified. Repetitive bullets called out. First-2-words rewrites provided for bullets that don't stop the scroll.
 
-# 5. Open http://localhost:8000
-```
+**Stage 4 — Mock interview** *(optional)*
+7 questions: opening, 3 technical, 2 behavioural (STAR), 1 curveball. Each answer scored out of 10 with a rewritten 9/10 version. Final interview score and top 3 things to practice.
 
 ---
 
-## Deploy to Render (free)
+## Other tools
 
-1. Push this repo to GitHub
-2. Go to https://render.com → New → Web Service
-3. Connect your GitHub repo
-4. Settings:
-   - **Build command:** `pip install -r requirements.txt`
-   - **Start command:** `uvicorn server:app --host 0.0.0.0 --port $PORT`
-   - **Environment variable:** `ANTHROPIC_API_KEY` = your key
-5. Click Deploy
-
-Your app will be live at `https://your-app-name.onrender.com`
+| Tool | What it does |
+|---|---|
+| Cover Letter | Tailored, tone-selectable, non-generic. Sounds like you wrote it. |
+| LinkedIn | Rewrites headline, about section, and featured skills for your target role |
+| Job Match | Live job search via Adzuna API ranked by resume keyword match |
+| Skill Gap | Prioritised gaps with specific free learning resources |
 
 ---
 
-## Project Structure
+## Tiers
 
-```
-resume-analyzer/
-├── server.py          # FastAPI backend — proxies Anthropic API calls
-├── requirements.txt
-├── Procfile           # For Render deployment
-├── README.md
-└── static/
-    └── index.html     # Full frontend (single file)
-```
+| | Free | Pro |
+|---|---|---|
+| Model | Google Gemini 2.0 Flash | Anthropic Claude Sonnet |
+| Cost to user | Nothing | ~$0.02/analysis (own API key) |
+| Sign-up | No | No |
+| Daily limit | 200 analyses/day | Unlimited |
 
 ---
 
-## Tech Stack
+## Tech stack
 
-- **Backend:** Python, FastAPI, Anthropic SDK
-- **Frontend:** Vanilla HTML/CSS/JS (no build step needed)
-- **AI:** Claude claude-sonnet-4-20250514 via Anthropic API
-- **Hosting:** Render (free tier)
+| Layer | Technology |
+|---|---|
+| Frontend | Vanilla HTML/CSS/JS — Instrument Serif, Inter, cinematic dark UI |
+| Backend | Python, FastAPI, uvicorn |
+| Free AI | Google Gemini 2.0 Flash (server-side key, rate-limited) |
+| Pro AI | Anthropic Claude Sonnet (user's own key, never stored) |
+| Hosting | Render free tier |
+| Version control | GitHub |
 
 ---
 
-## Resume Writing for Your Own Resume
+## Security
 
-Once deployed, add this to your resume under projects:
+- No database — no user data stored anywhere
+- API keys never logged or persisted — Claude keys live only in the user's browser session
+- Gemini key stored as Render environment variable, never in source code
+- HTTPS enforced by Render
+- 200 requests/day cap on free tier to prevent abuse
 
-> **Resume Optimizer** — Built and deployed a full-stack AI web app using FastAPI and the Anthropic API that analyzes resume–job description match and rewrites resumes for ATS compatibility. Live at: https://your-app.onrender.com
+---
+
+*Built by [Shanhe96](https://ko-fi.com/shanhe96)*
