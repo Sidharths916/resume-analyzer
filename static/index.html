@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jobify — AI Resume Optimizer</title>
+<title>Jobsy — AI Resume Optimizer</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -443,7 +443,7 @@ select option{background:var(--surface2)}
   <!-- Glass nav inside hero -->
   <div style="position:relative;z-index:10;width:100%">
     <div class="hero-nav">
-      <a class="hero-logo" href="#" onclick="return false">Jobify<sup>®</sup></a>
+      <a class="hero-logo" href="#" onclick="return false">Jobsy<sup>®</sup></a>
       <nav class="hero-nav-links">
         <a href="#" class="active" onclick="return false">Home</a>
         <a href="#" onclick="enterApp()">Optimizer</a>
@@ -474,8 +474,8 @@ select option{background:var(--surface2)}
 
   <nav class="nav">
     <a class="logo" href="#" onclick="goHero()">
-      <img class="logo-img" src="/favicon.png" alt="Jobify">
-      <span class="logo-name">Jobify</span>
+      <img class="logo-img" src="/favicon.png" alt="Jobsy">
+      <span class="logo-name">Jobsy</span>
     </a>
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchPage('optimizer',this)">Optimizer</button>
@@ -1015,7 +1015,7 @@ function renderResults(p1,p3) {
 // ── DOWNLOADS ──
 function downloadTxt() {
   if (!rewrittenResume) return;
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rewrittenResume],{type:'text/plain'})); a.download='resume_jobify.txt'; a.click();
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rewrittenResume],{type:'text/plain'})); a.download='resume_jobsy.txt'; a.click();
 }
 function copyResume() {
   if (!rewrittenResume) return;
@@ -1030,7 +1030,7 @@ function downloadPDF() {
   let body='';
   lines.forEach(l=>{ const t=l.trim(); if(!t){body+='<br>';return;} if(t===t.toUpperCase()&&t.length>2&&!t.startsWith('-')){body+=`<h2>${t}</h2>`;}else if(t.startsWith('-')||t.startsWith('•')){body+=`<p class="b">${t.replace(/^[-•]\s*/,'')}</p>`;}else{body+=`<p>${t}</p>`;}});
   const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Resume — Jobify</title><style>body{font-family:Georgia,serif;font-size:11pt;line-height:1.55;max-width:750px;margin:0 auto;padding:2cm;color:#111}h2{font-size:11pt;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #ccc;padding-bottom:3px;margin:14px 0 6px}p{margin:3px 0}p.b{padding-left:16px;position:relative}p.b::before{content:"–";position:absolute;left:0}@media print{body{padding:1cm}}</style></head><body>${body}<script>window.onload=()=>window.print();<\/script></body></html>`);
+  win.document.write(`<!DOCTYPE html><html><head><title>Resume — Jobsy</title><style>body{font-family:Georgia,serif;font-size:11pt;line-height:1.55;max-width:750px;margin:0 auto;padding:2cm;color:#111}h2{font-size:11pt;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #ccc;padding-bottom:3px;margin:14px 0 6px}p{margin:3px 0}p.b{padding-left:16px;position:relative}p.b::before{content:"–";position:absolute;left:0}@media print{body{padding:1cm}}</style></head><body>${body}<script>window.onload=()=>window.print();<\/script></body></html>`);
   win.document.close();
 }
 function downloadWord() {
@@ -1039,7 +1039,7 @@ function downloadWord() {
   let rtf='{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Times New Roman;}}{\\colortbl;\\red17\\green17\\blue17;}\n\\f0\\fs22\\cf1\n';
   lines.forEach(l=>{ const t=l.trim(); if(!t){rtf+='\\par\n';return;} const e=t.replace(/\\/g,'\\\\').replace(/\{/g,'\\{').replace(/\}/g,'\\}'); if(t===t.toUpperCase()&&t.length>2&&!t.startsWith('-')){rtf+=`\\b ${e}\\b0\\par\n`;}else if(t.startsWith('-')||t.startsWith('•')){rtf+=`\\li240 ${e.replace(/^[-•]\s*/,'')}\\li0\\par\n`;}else{rtf+=`${e}\\par\n`;}});
   rtf+='}';
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rtf],{type:'application/rtf'})); a.download='resume_jobify.rtf'; a.click();
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rtf],{type:'application/rtf'})); a.download='resume_jobsy.rtf'; a.click();
 }
 
 // ── MOCK INTERVIEW ──
@@ -1120,7 +1120,7 @@ async function generateCoverLetter() {
   finally{btn.disabled=false;btn.textContent='Generate cover letter →';}
 }
 function copyCover(){if(window._coverLetter)navigator.clipboard.writeText(window._coverLetter);}
-function downloadCoverTxt(){if(!window._coverLetter)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([window._coverLetter],{type:'text/plain'}));a.download='cover_letter_jobify.txt';a.click();}
+function downloadCoverTxt(){if(!window._coverLetter)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([window._coverLetter],{type:'text/plain'}));a.download='cover_letter_jobsy.txt';a.click();}
 
 // ── LINKEDIN ──
 async function generateLinkedIn() {
