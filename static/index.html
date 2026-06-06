@@ -830,6 +830,18 @@ select option{background:var(--surface2)}
 </div><!-- end app-shell -->
 
 <script>
+
+// ── SECURITY: HTML escape for all AI-generated content ──
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 // ── STATE ──
 let pdfBase64 = null;
 let rewrittenResume = '';
@@ -1067,26 +1079,26 @@ function renderResults(p1,p3) {
     const el=document.getElementById(sid); el.textContent=n+'%'; el.className='num '+sc(n);
     const bar=document.getElementById(bid); bar.style.width=n+'%'; bar.className='bfill '+bc(n);
   });
-  if (p1.top_ats_change) { document.getElementById('bigTipText').textContent=p1.top_ats_change; document.getElementById('bigTip').style.display='block'; }
+  if (p1.top_ats_change) { document.getElementById('bigTipText').textContent=String(p1.top_ats_change); document.getElementById('bigTip').style.display='block'; }
   const rf=document.getElementById('redFlags'); rf.innerHTML='';
-  (p1.red_flags||[]).forEach(f=>{ const d=document.createElement('div'); d.className='red-flag-item'; d.textContent=f; rf.appendChild(d); });
+  (p1.red_flags||[]).forEach(flag=>{ const d=document.createElement('div'); d.className='red-flag-item'; d.textContent=flag; rf.appendChild(d); });
   const ss=document.getElementById('sectionScores'); ss.innerHTML='';
-  (p1.section_scores||[]).forEach(s=>{ ss.innerHTML+=`<div class="section-score-row"><span class="section-score-name">${s.name}</span><span class="section-score-num ${sc(s.score*10)}">${s.score}/10</span></div><div class="section-score-note">${s.note}</div>`; });
+  (p1.section_scores||[]).forEach(s=>{ ss.innerHTML+=`<div class="section-score-row"><span class="section-score-name">${esc(s.name)}</span><span class="section-score-num ${sc(s.score*10)}">${esc(String(s.score))}/10</span></div><div class="section-score-note">${esc(s.note)}</div>`; });
   const tr=document.getElementById('tagRow'); tr.innerHTML='';
   const kp=document.getElementById('keywordPlacement'); kp.innerHTML='';
   (p1.keywords||[]).forEach(k=>{
-    const s=document.createElement('span'); s.className='tag '+k.status; s.textContent=k.text; tr.appendChild(s);
-    if ((k.status==='miss'||k.status==='partial')&&k.placement) kp.innerHTML+=`<div style="font-size:12px;color:var(--muted);padding:3px 0">→ <strong style="color:var(--text)">${k.text}</strong> — ${k.placement}</div>`;
+    const s=document.createElement('span'); s.className='tag '+(k.status==='match'||k.status==='miss'||k.status==='partial'?k.status:'miss'); s.textContent=String(k.text||''); tr.appendChild(s);
+    if ((k.status==='miss'||k.status==='partial')&&k.placement) kp.innerHTML+=`<div style="font-size:12px;color:var(--muted);padding:3px 0">→ <strong style="color:var(--text)">${esc(k.text)}</strong> — ${esc(k.placement)}</div>`;
   });
   if (p3.stop_scroll_hook||p3.skip_sections?.length) {
     const sc2=document.getElementById('scanSection'); sc2.style.display='block';
     let html='';
-    if (p3.stop_scroll_hook) html+=`<div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--green)">✓ <strong>Stop-scroll hook:</strong> ${p3.stop_scroll_hook}</div>`;
-    if (p3.skip_sections?.length) html+=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px"><strong style="color:var(--text)">Sections that might get skipped:</strong> ${p3.skip_sections.join(', ')}</div>`;
-    if (p3.repetitive_bullets?.length) html+=`<div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">Repetitive bullets:</strong> ${p3.repetitive_bullets.join(' · ')}</div>`;
+    if (p3.stop_scroll_hook) html+=`<div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--green)">✓ <strong>Stop-scroll hook:</strong> ${esc(p3.stop_scroll_hook)}</div>`;
+    if (p3.skip_sections?.length) html+=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px"><strong style="color:var(--text)">Sections that might get skipped:</strong> ${esc(p3.skip_sections.join(', '))}</div>`;
+    if (p3.repetitive_bullets?.length) html+=`<div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">Repetitive bullets:</strong> ${esc(p3.repetitive_bullets.join(' · '))}</div>`;
     if (p3.rewrites?.length) {
       html+=`<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">First-2-words rewrites</div>`;
-      p3.rewrites.forEach(r=>{ html+=`<div style="margin-bottom:10px"><div style="font-size:12px;color:var(--red);text-decoration:line-through;margin-bottom:3px">${r.original}</div><div style="font-size:13px;color:var(--green)">${r.improved}</div></div>`; });
+      p3.rewrites.forEach(r=>{ html+=`<div style="margin-bottom:10px"><div style="font-size:12px;color:var(--red);text-decoration:line-through;margin-bottom:3px">${esc(r.original)}</div><div style="font-size:13px;color:var(--green)">${esc(r.improved)}</div></div>`; });
     }
     document.getElementById('scanResults').innerHTML=html;
   }
@@ -1110,7 +1122,7 @@ function downloadPDF() {
   let body='';
   lines.forEach(l=>{ const t=l.trim(); if(!t){body+='<br>';return;} if(t===t.toUpperCase()&&t.length>2&&!t.startsWith('-')){body+=`<h2>${t}</h2>`;}else if(t.startsWith('-')||t.startsWith('•')){body+=`<p class="b">${t.replace(/^[-•]\s*/,'')}</p>`;}else{body+=`<p>${t}</p>`;}});
   const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Resume — Jobsy</title><style>body{font-family:Georgia,serif;font-size:11pt;line-height:1.55;max-width:750px;margin:0 auto;padding:2cm;color:#111}h2{font-size:11pt;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #ccc;padding-bottom:3px;margin:14px 0 6px}p{margin:3px 0}p.b{padding-left:16px;position:relative}p.b::before{content:"–";position:absolute;left:0}@media print{body{padding:1cm}}</style></head><body>${body}<script>window.onload=()=>window.print();<\/script></body></html>`);
+  const safeBody=body.replace(/<script[^>]*>.*?<\/script>/gi,'').replace(/on\w+\s*=/gi,'');win.document.write(`<!DOCTYPE html><html><head><title>Resume — Jobsy</title><style>body{font-family:Georgia,serif;font-size:11pt;line-height:1.55;max-width:750px;margin:0 auto;padding:2cm;color:#111}h2{font-size:11pt;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #ccc;padding-bottom:3px;margin:14px 0 6px}p{margin:3px 0}p.b{padding-left:16px;position:relative}p.b::before{content:"–";position:absolute;left:0}@media print{body{padding:1cm}}</style></head><body>${safeBody}<script>window.onload=()=>window.print();<\/script></body></html>`);
   win.document.close();
 }
 function downloadWord() {
@@ -1138,7 +1150,7 @@ function renderInterviewQuestion(question,isLast) {
   const qNum=interviewState.questionNum;
   const total=interviewState.totalQ;
   const qDiv=document.createElement('div');
-  qDiv.innerHTML=`<div class="interview-q"><div class="interview-q-label">Question ${qNum} of ${total}</div>${question}</div>${!isLast?`<textarea class="interview-input" id="iv-a-${qNum}" placeholder="Type your answer…"></textarea><button class="interview-submit" id="iv-s-${qNum}" onclick="submitAnswer(${qNum})">Submit answer →</button>`:`<div class="interview-final" id="iv-final"></div>`}`;
+  qDiv.innerHTML=`<div class="interview-q"><div class="interview-q-label">Question ${esc(String(qNum))} of ${esc(String(total))}</div>${esc(question)}</div>${!isLast?`<textarea class="interview-input" id="iv-a-${esc(String(qNum))}" placeholder="Type your answer…"></textarea><button class="interview-submit" id="iv-s-${esc(String(qNum))}" onclick="submitAnswer(${esc(String(qNum))})">Submit answer →</button>`:`<div class="interview-final" id="iv-final"></div>`}`;
   body.appendChild(qDiv);
   qDiv.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -1154,7 +1166,7 @@ async function submitAnswer(qNum) {
     const raw=await callClaude(msgs,sys,800);
     const fb=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const fd=document.createElement('div'); fd.className='interview-feedback';
-    fd.innerHTML=`<div class="feedback-score ${sc(fb.score*10)}">${fb.score}/10</div><div class="feedback-label">Answer score</div><div class="feedback-body"><strong style="color:var(--green)">Strong:</strong> ${fb.strong}<br><br><strong style="color:var(--amber)">Improve:</strong> ${fb.improve}</div><div class="feedback-rewrite"><strong style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--purple)">9/10 version:</strong><br>${fb.rewrite}</div>`;
+    fd.innerHTML=`<div class="feedback-score ${sc(fb.score*10)}">${esc(String(fb.score))}/10</div><div class="feedback-label">Answer score</div><div class="feedback-body"><strong style="color:var(--green)">Strong:</strong> ${esc(fb.strong)}<br><br><strong style="color:var(--amber)">Improve:</strong> ${esc(fb.improve)}</div><div class="feedback-rewrite"><strong style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--purple)">9/10 version:</strong><br>${esc(fb.rewrite)}</div>`;
     subBtn.parentNode.insertBefore(fd,subBtn.nextSibling);
     subBtn.style.display='none'; ansEl.disabled=true;
     interviewState.history.push({role:'assistant',content:JSON.stringify(fb)});
@@ -1173,7 +1185,7 @@ async function renderInterviewFinal() {
     const f=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const el=document.getElementById('iv-final')||document.createElement('div');
     el.className='interview-final';
-    el.innerHTML=`<div class="interview-complete-score">${f.overall_score}/100</div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);margin-bottom:10px">Overall interview score</div><p style="margin-bottom:12px;font-weight:500">${f.hire_verdict}</p><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px">Top 3 to practice:</div>${(f.top3_practice||[]).map((t,i)=>`<div style="padding:6px 0;border-bottom:1px solid rgba(167,139,250,.15);font-size:13px">${i+1}. ${t}</div>`).join('')}`;
+    el.innerHTML=`<div class="interview-complete-score">${esc(String(f.overall_score))}/100</div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);margin-bottom:10px">Overall interview score</div><p style="margin-bottom:12px;font-weight:500">${esc(f.hire_verdict)}</p><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px">Top 3 to practice:</div>${(f.top3_practice||[]).map((t,i)=>`<div style="padding:6px 0;border-bottom:1px solid rgba(167,139,250,.15);font-size:13px">${esc(String(i+1))}. ${esc(t)}</div>`).join('')}`;
     document.getElementById('interviewBody').appendChild(el);
     el.scrollIntoView({behavior:'smooth'});
   } catch(e){}
@@ -1250,10 +1262,10 @@ async function findJobs() {
     document.getElementById('jobs-loading').style.display='none';
     const cont=document.getElementById('jobs-results');
     if(!jobs.length){cont.innerHTML='<p style="color:var(--muted);font-size:13px;padding:1rem">No jobs found. Try a different country.</p>';return;}
-    cont.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:4px 0">Found ${jobs.length} matches · top skills: <strong style="color:var(--text)">${topKw.join(', ')}</strong></div>`;
+    cont.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:4px 0">Found ${esc(String(jobs.length))} matches · top skills: <strong style="color:var(--text)">${esc(topKw.join(', '))}</strong></div>`;
     jobs.forEach(job=>{
       const score=Math.floor(55+Math.random()*35);
-      cont.innerHTML+=`<div class="job-card"><div><div class="job-title">${job.title||'Role'}</div><div class="job-company">${job.company?.display_name||'Company'}</div><div class="job-location">${job.location?.display_name||''}</div></div><div class="job-card-right"><div class="job-match-pct">${score}% match</div><a class="job-apply-btn" href="${job.redirect_url}" target="_blank" rel="noopener">Apply →</a></div></div>`;
+      cont.innerHTML+=`<div class="job-card"><div><div class="job-title">${esc(job.title||'Role')}</div><div class="job-company">${esc(job.company?.display_name||'Company')}</div><div class="job-location">${esc(job.location?.display_name||'')}</div></div><div class="job-card-right"><div class="job-match-pct">${esc(String(score))}% match</div><a class="job-apply-btn" href="${esc(job.redirect_url||'#')}" target="_blank" rel="noopener">Apply →</a></div></div>`;
     });
   } catch(e){
     document.getElementById('jobs-loading').style.display='none';
@@ -1279,7 +1291,7 @@ gaps: 5-8 items by priority. Specific resources only.`;
     const cont=document.getElementById('sg-results');
     const pc={high:'var(--red)',medium:'var(--amber)',low:'var(--green)'};
     let html='';
-    if(data.present?.length) html+=`<div class="section" style="margin-bottom:10px"><h3>Already have ✓</h3><div class="tags">${data.present.map(s=>`<span class="tag match">${s}</span>`).join('')}</div></div>`;
+    if(data.present?.length) html+=`<div class="section" style="margin-bottom:10px"><h3>Already have ✓</h3><div class="tags">${data.present.map(s=>`<span class="tag match">${esc(s)}</span>`).join('')}</div></div>`;
     if(data.gaps?.length){
       html+=`<div class="section"><h3>Skill gaps — prioritised</h3>`;
       data.gaps.forEach(g=>{html+=`<div class="skill-gap-item"><div class="skill-gap-name" style="color:${pc[g.priority]||'var(--text)'}">${g.skill}<div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;opacity:.7">${g.priority}</div></div><div class="skill-gap-desc">${g.description}<br><span style="color:var(--blue-light);font-size:12px">→ ${g.resource}</span></div></div>`;});
