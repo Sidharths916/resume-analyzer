@@ -1,0 +1,51 @@
+# CodeRabbit AI reviewer config — jobsy
+# Focus: production correctness, security, edge cases. Ignore style.
+
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  path_filters:
+    - "!static/landing.html"   # unused file, skip
+    - "!*.md"                  # docs don't need code review
+
+  path_instructions:
+    - path: "server.py"
+      instructions: |
+        Review this FastAPI backend with a production security mindset. Flag any of:
+        - User input that reaches an external API call without validation or length limits
+        - Missing rate limiting on any new endpoint
+        - API keys or secrets that could be logged, returned in responses, or stored
+        - Unhandled exceptions that could leak stack traces to the client
+        - Any endpoint that doesn't validate the tier header before making an API call
+        - Prompt injection vectors — user content injected into AI prompts without sanitization
+        - Response content that echoes back user input without escaping
+        - Missing timeout on any external HTTP call
+        - N+1 patterns if a database is ever added
+        Do NOT comment on: code style, variable naming, PEP8 formatting, import order.
+
+    - path: "static/index.html"
+      instructions: |
+        Review this single-file frontend with a security and UX mindset. Flag any of:
+        - API keys, tokens or secrets hardcoded anywhere in JS
+        - User input rendered as innerHTML (XSS vector) instead of textContent
+        - fetch() calls that don't handle network errors or non-200 responses
+        - sessionStorage usage that stores sensitive data beyond the session
+        - Any place where error messages from the server are shown verbatim to users
+        - Missing input length limits before sending to the backend
+        Do NOT comment on: CSS formatting, variable naming, code style.
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+
+chat:
+  auto_reply: true

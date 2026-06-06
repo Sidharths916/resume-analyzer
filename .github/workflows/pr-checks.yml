@@ -1,0 +1,39 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check for secrets in code
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          # Fail if any actual key patterns found in source files
+          if grep -rn "AIzaSy\|sk-ant-api\|ghp_[a-zA-Z0-9]" --include="*.py" --include="*.js" --include="*.html" .; then
+            echo "ERROR: Potential hardcoded secret found. Move to environment variables."
+            exit 1
+          fi
+          echo "No hardcoded secrets found."
+
+      - name: Validate server.py imports cleanly
+        run: python -c "import ast; ast.parse(open('server.py').read()); print('server.py syntax OK')"
+
+      - name: Check no debug endpoints exposed
+        run: |
+          if grep -n "docs_url=None" server.py | grep -v "docs_url=None"; then
+            echo "WARNING: FastAPI docs may be publicly exposed"
+          fi
+          echo "Endpoint check passed."

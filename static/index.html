@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="description" content="Turn a rough resume into an ATS-ready one. Free AI-powered resume optimizer with recruiter analysis, XYZ rewrites, mock interviews and job matching.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jobsy — AI Resume Optimizer</title>
-<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root { --font-display: 'Instrument Serif', serif; --font-body: 'Inter', sans-serif; }
@@ -117,6 +119,46 @@
   0%   { opacity: .6; }
   50%  { opacity: 1; }
   100% { opacity: .75; }
+}
+
+/* ── SKELETON LOADERS ── */
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position:  800px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.04) 25%,
+    rgba(255,255,255,.08) 50%,
+    rgba(255,255,255,.04) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 6px;
+}
+.skeleton-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 10px;
+}
+.skeleton-line { height: 14px; margin-bottom: 10px; }
+.skeleton-line.short { width: 40%; }
+.skeleton-line.med   { width: 70%; }
+.skeleton-line.full  { width: 100%; }
+.skeleton-line.tall  { height: 22px; margin-bottom: 14px; }
+.skeleton-scores {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.skeleton-score-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  height: 90px;
 }
 </style>
 <style>
@@ -601,6 +643,41 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
+
+    <!-- Skeleton loader — shown during analysis -->
+    <div id="skeleton" style="display:none">
+      <div class="skeleton-scores">
+        <div class="skeleton-score-card"><div class="skeleton skeleton-line tall" style="width:50%"></div><div class="skeleton skeleton-line short"></div></div>
+        <div class="skeleton-score-card"><div class="skeleton skeleton-line tall" style="width:50%"></div><div class="skeleton skeleton-line short"></div></div>
+        <div class="skeleton-score-card"><div class="skeleton skeleton-line tall" style="width:50%"></div><div class="skeleton skeleton-line short"></div></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-line short" style="margin-bottom:14px"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line med"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line short"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-line short" style="margin-bottom:14px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="skeleton" style="width:80px;height:24px;border-radius:99px"></div>
+          <div class="skeleton" style="width:60px;height:24px;border-radius:99px"></div>
+          <div class="skeleton" style="width:100px;height:24px;border-radius:99px"></div>
+          <div class="skeleton" style="width:70px;height:24px;border-radius:99px"></div>
+          <div class="skeleton" style="width:90px;height:24px;border-radius:99px"></div>
+        </div>
+      </div>
+      <div class="skeleton-card" style="height:200px">
+        <div class="skeleton skeleton-line short" style="margin-bottom:14px"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line med"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line short"></div>
+        <div class="skeleton skeleton-line full"></div>
+      </div>
+    </div>
+
     <div class="results-wrap" id="results">
       <div class="step-row"><span class="step-badge">RESULTS</span><span class="step-title">Recruiter match analysis</span></div>
       <div class="scores-row">
@@ -915,6 +992,7 @@ async function runAll() {
   document.getElementById('runBtn').disabled = true;
   document.getElementById('progress').className = 'progress-wrap on';
   document.getElementById('results').className = 'results-wrap';
+  document.getElementById('skeleton').style.display = 'block';
 
   const resumeContent = isPDF
     ? [{type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfBase64}},{type:'text',text:`JOB DESCRIPTION:\n${jd}`}]
@@ -960,6 +1038,7 @@ rewrites: 2-3 bullets needing first-2-words treatment.`;
     const p3 = JSON.parse(p3raw.replace(/```json|```/g,'').trim());
     setProgress(82,'Analysis complete…',4);
 
+    document.getElementById('skeleton').style.display = 'none';
     renderResults(p1,p3);
     document.getElementById('resumeOut').textContent = rewrittenResume;
     document.getElementById('results').className = 'results-wrap on';
@@ -973,6 +1052,7 @@ rewrites: 2-3 bullets needing first-2-words treatment.`;
     setProgress(100,'Done!',6);
 
   } catch(e) {
+    document.getElementById('skeleton').style.display = 'none';
     err.textContent = e.message==='PRO_NO_KEY' ? 'Pro mode: please enter your Anthropic key in the Pro card above.' : 'Error: '+e.message;
     err.className = 'err-box on';
   } finally {
