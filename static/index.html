@@ -13,9 +13,9 @@
 
 /* ── TIER SELECTOR ── */
 .tier-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem}
-.tier-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;position:relative;}
-.tier-card:hover{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.05)}
-.tier-card.active{border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.07)}
+.tier-card{padding:1.1rem 1.25rem;}
+
+
 .tier-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
 .tier-check{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;transition:all .2s;margin-top:2px}
 .tier-card.active .tier-check{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -198,7 +198,278 @@
   max-width: 300px; line-height: 1.6;
 }
 </style>
-<style>
+
+/* ══════════════════════════════════════════════
+   LIQUID GLASS DESIGN SYSTEM
+   All surfaces use layered glass with:
+   - Frosted backdrop blur
+   - Gradient border (light catch top, shadow bottom)
+   - Subtle inner glow
+   ══════════════════════════════════════════════ */
+
+/* Base glass mixin via CSS custom properties */
+:root {
+  --glass-bg:        rgba(255,255,255,.055);
+  --glass-bg-hover:  rgba(255,255,255,.085);
+  --glass-bg-active: rgba(255,255,255,.10);
+  --glass-blur:      blur(18px);
+  --glass-border:    rgba(255,255,255,.12);
+  --glass-glow:      inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(0,0,0,.2);
+  --glass-shadow:    0 4px 24px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.15);
+  --glass-radius:    14px;
+}
+
+/* ── CARDS (sections, tier cards, score cards, tool cards, api panel) ── */
+.gl-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+  position: relative;
+}
+.gl-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,.22) 0%,
+    rgba(255,255,255,.06) 40%,
+    rgba(255,255,255,.0)  60%,
+    rgba(255,255,255,.08) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── GLASS BUTTON (primary CTA) ── */
+.gl-btn-primary {
+  background: rgba(255,255,255,.95);
+  color: #05050c;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px;
+  font-weight: 400;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0,0,0,.15),
+              inset 0 1px 0 rgba(255,255,255,.9),
+              0 8px 32px rgba(0,0,0,.2);
+  transition: all .18s;
+}
+.gl-btn-primary:hover {
+  background: rgba(255,255,255,1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0,0,0,.12),
+              inset 0 1px 0 rgba(255,255,255,.9),
+              0 16px 48px rgba(0,0,0,.25);
+}
+.gl-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 0 rgba(0,0,0,.15),
+              inset 0 1px 0 rgba(255,255,255,.9),
+              0 4px 16px rgba(0,0,0,.15);
+}
+.gl-btn-primary:disabled { opacity:.25; cursor:not-allowed; transform:none; box-shadow:none; }
+
+/* ── GLASS BUTTON (secondary / download) ── */
+.gl-btn {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 8px;
+  box-shadow: var(--glass-glow);
+  position: relative;
+  transition: all .15s;
+}
+.gl-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,.18) 0%,
+    rgba(255,255,255,.04) 50%,
+    rgba(255,255,255,.08) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.gl-btn:hover {
+  background: var(--glass-bg-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-glow), 0 8px 24px rgba(0,0,0,.2);
+}
+
+/* ── GLASS INPUT (recessed well) ── */
+.gl-input {
+  background: rgba(0,0,0,.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 10px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.3),
+              inset 0 1px 0 rgba(0,0,0,.2);
+  position: relative;
+  transition: box-shadow .15s;
+}
+.gl-input:focus-within,
+.gl-input:focus {
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.3),
+              inset 0 1px 0 rgba(0,0,0,.2),
+              0 0 0 2px rgba(255,255,255,.12);
+  outline: none;
+}
+
+/* ── NAV GLASS ── */
+.gl-nav {
+  background: rgba(0,10,18,.65);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04),
+              0 4px 24px rgba(0,0,0,.2);
+}
+
+/* ── NAV TABS ── */
+.gl-tabs {
+  background: rgba(0,0,0,.2);
+  border-radius: 10px;
+  padding: 3px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.3),
+              inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.gl-tab {
+  border-radius: 7px;
+  transition: all .15s;
+}
+.gl-tab.active {
+  background: rgba(255,255,255,.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2),
+              inset 0 1px 0 rgba(255,255,255,.15);
+}
+.gl-tab:hover:not(.active) { background: rgba(255,255,255,.06); }
+
+/* ── TIER CARDS ── */
+.tier-card {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+}
+.tier-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,.2) 0%,
+    rgba(255,255,255,.05) 45%,
+    rgba(255,255,255,.0)  55%,
+    rgba(255,255,255,.08) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.tier-card:hover {
+  background: var(--glass-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-glow), 0 12px 40px rgba(0,0,0,.3);
+}
+.tier-card.active {
+  background: rgba(59,130,246,.1);
+  box-shadow: var(--glass-glow),
+              0 0 0 1px rgba(59,130,246,.4),
+              0 8px 32px rgba(59,130,246,.15),
+              0 4px 16px rgba(0,0,0,.2);
+}
+.tier-card.active::before {
+  background: linear-gradient(145deg,
+    rgba(147,197,253,.35) 0%,
+    rgba(59,130,246,.1)   45%,
+    rgba(59,130,246,.0)   60%,
+    rgba(147,197,253,.15) 100%
+  );
+}
+
+/* ── SCORE CARDS ── */
+.score-card {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+}
+.score-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,.18) 0%,
+    rgba(255,255,255,.04) 50%,
+    rgba(255,255,255,.06) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── SECTION CARDS ── */
+.section {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 10px;
+  box-shadow: var(--glass-glow), var(--glass-shadow);
+}
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,.16) 0%,
+    rgba(255,255,255,.04) 50%,
+    rgba(255,255,255,.06) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.section h3 {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 14px;
+}
+
+/* ── ORIGINAL VARS ──
 :root {
   --bg: #080810;
   --surface: #0f0f1a;
@@ -264,10 +535,10 @@ body{background:#05050c;color:var(--text);font-family:'Inter',sans-serif;font-si
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
 .logo-img{width:26px;height:26px;border-radius:6px;object-fit:contain}
 .logo-name{font-family:"Instrument Serif",serif;font-size:1.35rem;letter-spacing:.01em;color:#fff;font-weight:400}
-.nav-tabs{display:flex;gap:1px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:3px}
-.nav-tab{padding:6px 15px;font-size:13px;font-weight:400;border:none;background:transparent;color:rgba(255,255,255,.4);border-radius:7px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;letter-spacing:-.01em}
-.nav-tab.active{background:rgba(255,255,255,.08);color:#fff}
-.nav-tab:hover:not(.active){color:rgba(255,255,255,.7)}
+.nav-tabs{display:flex;gap:1px;border-radius:10px;padding:3px;}
+.nav-tab{padding:6px 15px;font-size:13px;font-weight:400;border:none;background:transparent;color:rgba(255,255,255,.4);border-radius:7px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;letter-spacing:-.01em;}
+
+
 
 /* ── MAIN APP SHELL ── */
 .app-shell{display:none}
@@ -282,16 +553,16 @@ body{background:#05050c;color:var(--text);font-family:'Inter',sans-serif;font-si
 .page-header p{font-size:14px;color:rgba(255,255,255,.4);max-width:500px;line-height:1.65}
 
 /* ── API KEY PANEL ── */
-.apikey-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;}
+.apikey-panel{border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;}
 .panel-title{font-size:13px;font-weight:500;color:#fff;margin-bottom:5px}
 .panel-hint{font-size:12px;color:rgba(255,255,255,.35);line-height:1.55;margin-bottom:10px}
 .panel-hint a{color:var(--blue-light)}
 .apikey-row{display:flex;gap:8px}
-.apikey-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 12px;transition:border-color .15s}
-.apikey-input:focus{outline:none;border-color:rgba(59,130,246,.4)}
+.apikey-input{flex:1;background:rgba(0,0,0,.3);border:none;border-radius:8px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 12px;box-shadow:inset 0 2px 4px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06);transition:box-shadow .15s;}
+.apikey-input:focus{outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.1),0 0 0 2px rgba(59,130,246,.2);}
 .apikey-input::placeholder{color:rgba(255,255,255,.2)}
-.btn-save-key{padding:9px 18px;font-size:12px;font-weight:500;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.25);color:var(--blue-light);border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:background .15s}
-.btn-save-key:hover{background:rgba(59,130,246,.25)}
+.btn-save-key{padding:9px 18px;font-size:12px;font-weight:500;background:rgba(59,130,246,.18);border:none;color:var(--blue-light);border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(147,197,253,.2),0 2px 8px rgba(59,130,246,.15);transition:all .15s;}
+.btn-save-key:hover{background:rgba(59,130,246,.28);transform:translateY(-1px);}
 .key-status{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:8px}
 .key-status .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .key-set{color:var(--green)}.key-set .dot{background:var(--green)}
@@ -328,8 +599,8 @@ body{background:#05050c;color:var(--text);font-family:'Inter',sans-serif;font-si
 .input-col-inner{display:flex;flex-direction:column;flex:1}
 .input-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
 /* Unified textarea style */
-textarea{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.65;padding:12px 14px;resize:none;transition:border-color .15s;display:block}
-textarea:focus{outline:none;border-color:rgba(59,130,246,.5)}
+textarea{width:100%;background:rgba(0,0,0,.3);border:none;border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.65;padding:12px 14px;resize:none;display:block;box-shadow:inset 0 2px 6px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.06);transition:box-shadow .15s;}
+textarea:focus{outline:none;box-shadow:inset 0 2px 6px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.08),0 0 0 2px rgba(59,130,246,.2);}
 textarea::placeholder{color:var(--faint)}
 /* Both main textareas: fixed height, identical */
 #jd,#resumeText{height:240px;background:rgba(4,4,14,.7)}
@@ -338,9 +609,9 @@ input[type=text]:focus,select:focus{outline:none;border-color:rgba(59,130,246,.5
 select option{background:var(--surface2)}
 
 /* ── MODE TOGGLE ── */
-.mode-toggle{display:flex;border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;width:fit-content}
+.mode-toggle{display:flex;border:none;border-radius:8px;overflow:hidden;width:fit-content;background:rgba(0,0,0,.25);box-shadow:inset 0 1px 3px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.06);}
 .mode-btn{padding:6px 14px;font-size:12px;font-weight:400;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.3);transition:all .12s;font-family:'Inter',sans-serif}
-.mode-btn.on{background:rgba(255,255,255,.07);color:#fff}
+.mode-btn.on{background:rgba(255,255,255,.12);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.15);}
 .mode-btn:hover:not(.on){color:rgba(255,255,255,.6)}
 
 /* ── UPLOAD ZONE ── */
@@ -352,7 +623,7 @@ select option{background:var(--surface2)}
 .fname{font-size:12px;font-weight:500;color:var(--green);margin-top:2px}
 
 /* ── INTERVIEW TOGGLE ── */
-.interview-toggle-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 16px;margin-bottom:20px;width:fit-content}
+.interview-toggle-row{display:flex;align-items:center;gap:10px;border-radius:10px;padding:11px 16px;margin-bottom:20px;width:fit-content;background:rgba(255,255,255,.04);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 0 0 1px rgba(255,255,255,.07),0 4px 12px rgba(0,0,0,.15);}
 .interview-toggle-row label{font-size:13px;font-weight:400;color:rgba(255,255,255,.7);cursor:pointer;white-space:nowrap}
 .toggle-switch{position:relative;width:38px;height:21px;flex-shrink:0}
 .toggle-switch input{opacity:0;width:0;height:0}
@@ -365,9 +636,9 @@ select option{background:var(--surface2)}
 .step-badge{font-size:10px;font-weight:600;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.35);border-radius:99px;padding:3px 10px;letter-spacing:.08em}
 .step-title{font-size:14px;font-weight:400;color:rgba(255,255,255,.7)}
 /* ── RUN BUTTON ── */
-.run-btn{width:100%;padding:15px;font-family:var(--font-display);font-size:18px;font-weight:400;letter-spacing:-.01em;background:#fff;color:#080810;border:none;border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:1.5rem}
-.run-btn:hover{background:rgba(255,255,255,.9);transform:translateY(-1px)}
-.run-btn:disabled{opacity:.25;cursor:not-allowed;transform:none}
+.run-btn{width:100%;padding:15px;letter-spacing:-.01em;color:#05050c;border:none;border-radius:12px;cursor:pointer;transition:all .18s;margin-bottom:1.5rem}
+
+
 /* ── ERROR ── */
 .err-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:rgba(239,68,68,.9);margin-bottom:14px;display:none}
 .err-box.on{display:block}
@@ -375,7 +646,7 @@ select option{background:var(--surface2)}
 .progress-wrap{display:none;margin-bottom:2rem}
 .progress-wrap.on{display:block}
 .progress-label{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:8px}
-.progress-track{height:1px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.progress-track{height:2px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.3);}
 .progress-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:99px;width:0%;transition:width .5s ease}
 .progress-steps{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
 .pstep{font-size:11px;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:5px}
@@ -385,7 +656,7 @@ select option{background:var(--surface2)}
 .results-wrap{display:none}.results-wrap.on{display:block}
 /* ── SCORE CARDS ── */
 .scores-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-.score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:1rem 1.25rem;}
+.score-card{border-radius:12px;padding:1rem 1.25rem;}
 .score-card .num{font-family:var(--font-display);font-size:32px;font-weight:400;line-height:1;margin-bottom:4px}
 .score-card .lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em}
 .score-card .bar{height:1px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin-top:12px}
@@ -394,7 +665,7 @@ select option{background:var(--surface2)}
 .mi{color:var(--amber)}.bmi{background:var(--amber)}
 .lo{color:var(--red)}.blo{background:var(--red)}
 /* ── SECTION CARDS ── */
-.section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:10px;}
+
 .section h3{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
 /* ── DEEP ANALYSIS ── */
 .deep-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -422,8 +693,8 @@ select option{background:var(--surface2)}
 .legend-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 /* ── DOWNLOADS ── */
 .dl-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.dl-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;font-size:12px;font-weight:400;color:rgba(255,255,255,.7);cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif;white-space:nowrap}
-.dl-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.dl-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:400;color:rgba(255,255,255,.8);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;border:none;}
+
 .dl-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}
 .dl-btn.primary{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.2);color:var(--blue-light)}
 .dl-btn.primary:hover{background:rgba(59,130,246,.18)}
@@ -456,12 +727,12 @@ select option{background:var(--surface2)}
 .tool-hero{margin-bottom:2.5rem}
 .tool-hero h2{font-family:var(--font-display);font-size:clamp(26px,3vw,38px);font-weight:400;letter-spacing:-.02em;margin-bottom:8px;color:#fff}
 .tool-hero p{font-size:14px;color:rgba(255,255,255,.4);max-width:480px;line-height:1.6}
-.tool-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:1.5rem;margin-bottom:1rem;}
+.tool-card{border-radius:14px;padding:1.5rem;margin-bottom:1rem;}
 .tool-result{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.5rem 2rem;font-size:14px;line-height:1.8;color:rgba(255,255,255,.6);white-space:pre-wrap;word-break:break-word;display:none;margin-top:10px}
 .tool-result.on{display:block}
-.tool-btn{padding:11px 26px;font-family:var(--font-display);font-size:16px;font-weight:400;background:#fff;color:#080810;border:none;border-radius:8px;cursor:pointer;transition:all .2s}
-.tool-btn:hover{background:rgba(255,255,255,.88);transform:translateY(-1px)}
-.tool-btn:disabled{opacity:.25;cursor:not-allowed;transform:none}
+.tool-btn{padding:11px 26px;font-family:var(--font-display);font-size:16px;font-weight:400;color:#05050c;border:none;border-radius:8px;cursor:pointer;border-radius:10px;}
+
+
 /* ── JOB MATCH ── */
 .job-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;transition:border-color .15s}
 .job-card:hover{border-color:rgba(59,130,246,.25)}
@@ -551,17 +822,17 @@ select option{background:var(--surface2)}
 <!-- ══════════════════ APP SHELL ══════════════════ -->
 <div class="app-shell" id="appShell">
 
-  <nav class="nav">
+  <nav class="nav gl-nav">
     <a class="logo" href="#" onclick="goHero()">
       <img class="logo-img" src="/favicon.png" alt="Jobsy">
       <span class="logo-name">Jobsy</span>
     </a>
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchPage('optimizer',this)">Optimizer</button>
-      <button class="nav-tab" onclick="switchPage('cover',this)">Cover Letter</button>
-      <button class="nav-tab" onclick="switchPage('linkedin',this)">Profile</button>
-      <button class="nav-tab" onclick="switchPage('jobs',this)">Job Match</button>
-      <button class="nav-tab" onclick="switchPage('skills',this)">Skill Gap</button>
+    <div class="nav-tabs gl-tabs">
+      <button class="nav-tab gl-tab active" onclick="switchPage('optimizer',this)">Optimizer</button>
+      <button class="nav-tab gl-tab" onclick="switchPage('cover',this)">Cover Letter</button>
+      <button class="nav-tab gl-tab" onclick="switchPage('linkedin',this)">Profile</button>
+      <button class="nav-tab gl-tab" onclick="switchPage('jobs',this)">Job Match</button>
+      <button class="nav-tab gl-tab" onclick="switchPage('skills',this)">Skill Gap</button>
     </div>
   </nav>
 
@@ -661,7 +932,7 @@ select option{background:var(--surface2)}
     </div>
 
     <div class="err-box" id="err"></div>
-    <button class="run-btn" id="runBtn" onclick="runAll()">Analyze & rewrite my resume →</button>
+    <button class="run-btn gl-btn-primary" id="runBtn" onclick="runAll()">Analyze & rewrite my resume →</button>
 
     <div class="progress-wrap" id="progress">
       <div class="progress-label" id="progLabel">Starting…</div>
@@ -754,21 +1025,21 @@ select option{background:var(--surface2)}
         XYZ bullets · ATS-clean · Nothing fabricated
       </div>
       <div class="dl-row">
-        <button class="dl-btn primary" onclick="downloadPDF()">
+        <button class="dl-btn primary gl-btn" onclick="downloadPDF()">
           <svg viewBox="0 0 16 16"><path d="M8 1v9.5M4.5 7l3.5 3.5L11.5 7M2 13h12"/></svg>Download PDF
         </button>
-        <button class="dl-btn primary" onclick="downloadWord()">
+        <button class="dl-btn primary gl-btn" onclick="downloadWord()">
           <svg viewBox="0 0 16 16"><path d="M8 1v9.5M4.5 7l3.5 3.5L11.5 7M2 13h12"/></svg>Download Word
         </button>
-        <button class="dl-btn" onclick="downloadTxt()">
+        <button class="dl-btn gl-btn" onclick="downloadTxt()">
           <svg viewBox="0 0 16 16"><path d="M8 1v9.5M4.5 7l3.5 3.5L11.5 7M2 13h12"/></svg>Download .txt
         </button>
-        <button class="dl-btn" onclick="copyResume()">
+        <button class="dl-btn gl-btn" onclick="copyResume()">
           <svg viewBox="0 0 16 16"><path d="M5 2h7a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1zM3 4H2a1 1 0 00-1 1v9a1 1 0 001 1h8a1 1 0 001-1v-1"/></svg>Copy all
         </button>
       </div>
       <div class="resume-output" id="resumeOut"></div>
-      <div class="interview-panel" id="interviewPanel">
+      <div class="interview-panel gl-card" id="interviewPanel">
         <div class="interview-header">
           <span class="interview-badge">Mock Interview</span>
           <span style="font-size:13px;color:var(--muted)">Answer one question at a time. Get scored after each.</span>
@@ -781,8 +1052,8 @@ select option{background:var(--surface2)}
   <!-- ── COVER LETTER ── -->
   <div class="page" id="page-cover">
     <div class="tool-hero"><h2>Cover letter.</h2><p>Sounds like you. Not a template, not a robot. Tailored to the exact role and company.</p></div>
-    <div class="apikey-panel"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab — it carries over.</p><div class="key-status key-unset" id="cover-key-status"><span class="dot"></span><span id="cover-key-text">No key set</span></div></div>
-    <div class="tool-card">
+    <div class="apikey-panel gl-card"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab — it carries over.</p><div class="key-status key-unset" id="cover-key-status"><span class="dot"></span><span id="cover-key-text">No key set</span></div></div>
+    <div class="tool-card gl-card">
       <div class="input-grid">
         <div class="input-block"><div class="input-label">Job description</div><textarea id="cover-jd" placeholder="Paste the job description…" style="min-height:170px"></textarea></div>
         <div class="input-block"><div class="input-label">Your current resume</div><textarea id="cover-resume" placeholder="Paste your resume text…" style="min-height:170px"></textarea></div>
@@ -798,34 +1069,34 @@ select option{background:var(--surface2)}
           </select>
         </div>
       </div>
-      <div style="margin-top:14px"><button class="tool-btn" id="coverBtn" onclick="generateCoverLetter()">Generate cover letter →</button></div>
+      <div style="margin-top:14px"><button class="tool-btn gl-btn-primary" id="coverBtn" onclick="generateCoverLetter()">Generate cover letter →</button></div>
     </div>
     <div class="tool-result" id="cover-result"></div>
     <div class="dl-row" id="cover-dl" style="display:none;margin-top:10px">
-      <button class="dl-btn" onclick="copyCover()">Copy letter</button>
-      <button class="dl-btn" onclick="downloadCoverTxt()">Download .txt</button>
+      <button class="dl-btn gl-btn" onclick="copyCover()">Copy letter</button>
+      <button class="dl-btn gl-btn" onclick="downloadCoverTxt()">Download .txt</button>
     </div>
   </div>
 
   <!-- ── LINKEDIN ── -->
   <div class="page" id="page-linkedin">
     <div class="tool-hero"><h2>LinkedIn, but sharper.</h2><p>Your headline, About section, and skills — rewritten for the role you actually want.</p></div>
-    <div class="apikey-panel"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab.</p><div class="key-status key-unset" id="li-key-status"><span class="dot"></span><span id="li-key-text">No key set</span></div></div>
-    <div class="tool-card">
+    <div class="apikey-panel gl-card"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab.</p><div class="key-status key-unset" id="li-key-status"><span class="dot"></span><span id="li-key-text">No key set</span></div></div>
+    <div class="tool-card gl-card">
       <div class="input-grid">
         <div class="input-block"><div class="input-label">Target role / job description</div><textarea id="li-jd" placeholder="Paste the job title or full JD…" style="min-height:160px"></textarea></div>
         <div class="input-block"><div class="input-label">Current LinkedIn summary or resume</div><textarea id="li-current" placeholder="Paste your current about section or resume…" style="min-height:160px"></textarea></div>
       </div>
-      <button class="tool-btn" id="liBtn" onclick="generateLinkedIn()" style="margin-top:4px">Rewrite LinkedIn profile →</button>
+      <button class="tool-btn gl-btn-primary" id="liBtn" onclick="generateLinkedIn()" style="margin-top:4px">Rewrite LinkedIn profile →</button>
     </div>
     <div class="tool-result" id="li-result"></div>
-    <div class="dl-row" id="li-dl" style="display:none;margin-top:10px"><button class="dl-btn" onclick="copyLI()">Copy output</button></div>
+    <div class="dl-row" id="li-dl" style="display:none;margin-top:10px"><button class="dl-btn gl-btn" onclick="copyLI()">Copy output</button></div>
   </div>
 
   <!-- ── JOB MATCH ── -->
   <div class="page" id="page-jobs">
     <div class="tool-hero"><h2>Find the right jobs.</h2><p>Paste your resume. We pull out what you're good at and find live listings that actually match.</p></div>
-    <div class="tool-card">
+    <div class="tool-card gl-card">
       <div class="input-block" style="margin-bottom:14px"><div class="input-label">Your current resume</div><textarea id="jobs-resume" placeholder="Paste your resume…" style="min-height:150px"></textarea></div>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
         <div class="input-block" style="flex:1;min-width:140px"><div class="input-label">Country</div>
@@ -838,7 +1109,7 @@ select option{background:var(--surface2)}
             <option value="sg">Singapore</option>
           </select>
         </div>
-        <button class="tool-btn" id="jobsBtn" onclick="findJobs()">Find matching jobs →</button>
+        <button class="tool-btn gl-btn-primary" id="jobsBtn" onclick="findJobs()">Find matching jobs →</button>
       </div>
     </div>
     <div id="jobs-loading" style="display:none;padding:1rem;color:var(--muted);font-size:13px"><span class="spinner"></span>Extracting skills and searching…</div>
@@ -848,13 +1119,13 @@ select option{background:var(--surface2)}
   <!-- ── SKILL GAP ── -->
   <div class="page" id="page-skills">
     <div class="tool-hero"><h2>Skill Gap Analysis</h2><p>Exactly what's missing and how to close each gap — with specific free resources.</p></div>
-    <div class="apikey-panel"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab.</p><div class="key-status key-unset" id="sg-key-status"><span class="dot"></span><span id="sg-key-text">No key set</span></div></div>
-    <div class="tool-card">
+    <div class="apikey-panel gl-card"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab.</p><div class="key-status key-unset" id="sg-key-status"><span class="dot"></span><span id="sg-key-text">No key set</span></div></div>
+    <div class="tool-card gl-card">
       <div class="input-grid">
         <div class="input-block"><div class="input-label">Job description</div><textarea id="sg-jd" placeholder="Paste the job description…" style="min-height:160px"></textarea></div>
         <div class="input-block"><div class="input-label">Your current resume</div><textarea id="sg-resume" placeholder="Paste your resume…" style="min-height:160px"></textarea></div>
       </div>
-      <button class="tool-btn" id="sgBtn" onclick="skillGap()" style="margin-top:4px">Analyze skill gaps →</button>
+      <button class="tool-btn gl-btn-primary" id="sgBtn" onclick="skillGap()" style="margin-top:4px">Analyze skill gaps →</button>
     </div>
     <div id="sg-results" style="display:none;margin-top:10px"></div>
   </div>
