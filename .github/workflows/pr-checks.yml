@@ -18,6 +18,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Dependency vulnerability scan
+        run: |
+          pip install pip-audit
+          pip-audit --requirement requirements.txt || echo "⚠️ Review pip-audit findings above"
+
       - name: Check for hardcoded secrets
         run: |
           echo "Scanning for hardcoded secrets..."
@@ -25,15 +30,37 @@ jobs:
             echo "ERROR: Potential hardcoded secret found."
             exit 1
           fi
-          echo "Clean — no hardcoded secrets found."
+          echo "Clean."
 
       - name: Validate server.py syntax
         run: python -c "import ast; ast.parse(open('server.py').read()); print('server.py syntax OK')"
 
-      - name: Check no public debug endpoints
+      - name: Check security headers present
         run: |
-          if grep -qn 'docs_url=None' server.py; then
-            echo "FastAPI docs correctly disabled."
-          else
-            echo "WARNING: FastAPI docs may be publicly exposed."
+          python -c "
+          srv = open('server.py').read()
+          required = ['X-Content-Type-Options','X-Frame-Options','Referrer-Policy','Content-Security-Policy','Strict-Transport-Security']
+          missing = [h for h in required if h not in srv]
+          if missing:
+              print('MISSING HEADERS:', missing)
+              exit(1)
+          print('All security headers present.')
+          "
+
+      - name: Check no debug endpoints exposed
+        run: |
+          python -c "
+          srv = open('server.py').read()
+          if 'docs_url=None' not in srv or 'redoc_url=None' not in srv:
+              print('WARNING: FastAPI docs may be publicly exposed')
+              exit(1)
+          print('API docs correctly disabled.')
+          "
+
+      - name: Check .env not committed
+        run: |
+          if git ls-files | grep -q "^\.env$"; then
+            echo "ERROR: .env file is tracked by git"
+            exit 1
           fi
+          echo ".env not tracked."

@@ -7,6 +7,9 @@ from fastapi import FastAPI, HTTPException, Header, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
+def api_error(code: str, message: str, status: int = 400):
+    raise HTTPException(status_code=status, detail={"error": True, "code": code, "message": message})
 from pydantic import BaseModel, field_validator
 from typing import Any
 from datetime import date
@@ -31,6 +34,7 @@ async def security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' https://res.cloudinary.com https://d8j0ntlcm91z4.cloudfront.net; connect-src 'self' https://api.anthropic.com https://generativelanguage.googleapis.com https://api.adzuna.com"
     return response
 
@@ -155,9 +159,9 @@ def extract_text(messages: list[Any]) -> str:
 # ── GEMINI (free tier) ───────────────────────────────────────────────────────
 async def call_gemini(req: MessageRequest) -> str:
     if not SERVER_GEMINI_KEY:
-        raise HTTPException(503, "Free tier temporarily unavailable. Please use Pro mode.")
+        api_error("FREE_TIER_UNAVAILABLE", "Free tier temporarily unavailable. Please use Pro mode.", 503)
     if not check_and_increment():
-        raise HTTPException(429, f"Free tier daily limit reached ({DAILY_CAP}/day). Try tomorrow or switch to Pro.")
+        api_error("DAILY_CAP_REACHED", f"Free tier daily limit reached ({DAILY_CAP}/day). Try again tomorrow or switch to Pro.", 429)
 
     prompt = (f"{sanitize_text(req.system)}\n\n" if req.system else "") + extract_text(req.messages)
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={SERVER_GEMINI_KEY}"
@@ -170,16 +174,16 @@ async def call_gemini(req: MessageRequest) -> str:
 
     if resp.status_code != 200:
         err = resp.json().get("error", {})
-        raise HTTPException(502, f"Free tier error: {err.get('message', 'Unknown error')}")
+        api_error("UPSTREAM_ERROR", f"Free tier error: {err.get('message', 'Unknown error')[:100]}", 502)
     try:
         return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
     except (KeyError, IndexError):
-        raise HTTPException(502, "Unexpected response from free tier.")
+        api_error("UPSTREAM_MALFORMED", "Unexpected response from free tier.", 502)
 
 # ── CLAUDE (pro tier) ────────────────────────────────────────────────────────
 async def call_claude(req: MessageRequest, api_key: str) -> str:
     if not api_key.startswith("sk-ant-"):
-        raise HTTPException(400, "Invalid Anthropic key — must start with sk-ant-")
+        api_error("INVALID_KEY", "Invalid Anthropic key — must start with sk-ant-", 400)
     try:
         client = anthropic.Anthropic(api_key=api_key)
         kwargs: dict[str, Any] = dict(model=req.model, max_tokens=req.max_tokens, messages=req.messages)
@@ -188,14 +192,15 @@ async def call_claude(req: MessageRequest, api_key: str) -> str:
         response = client.messages.create(**kwargs)
         return response.content[0].text
     except anthropic.AuthenticationError:
-        raise HTTPException(401, "Invalid Anthropic key. Check console.anthropic.com.")
+        api_error("AUTH_FAILED", "Invalid Anthropic key. Check console.anthropic.com.", 401)
     except anthropic.RateLimitError:
-        raise HTTPException(429, "Anthropic rate limit hit. Wait a moment and try again.")
+        api_error("UPSTREAM_RATE_LIMITED", "Anthropic rate limit hit. Wait a moment and try again.", 429)
     except anthropic.APIError as e:
-        raise HTTPException(502, f"Claude API error: {str(e)[:200]}")
+        api_error("UPSTREAM_ERROR", f"Claude API error: {str(e)[:100]}", 502)
 
 # ── MAIN ENDPOINT ─────────────────────────────────────────────────────────────
-@app.post("/api/analyze")
+@app.post("/api/v1/analyze")
+@app.post("/api/analyze")  # backwards compat
 async def analyze(
     request: Request,
     req: MessageRequest,
@@ -205,15 +210,15 @@ async def analyze(
     # Rate limiting
     ip = get_client_ip(request)
     if is_rate_limited(ip):
-        raise HTTPException(429, "Too many requests. Please slow down — max 30 per 15 minutes.")
+        api_error("RATE_LIMITED", "Too many requests — max 30 per 15 minutes per IP.", 429)
 
     tier = (x_tier or "free").strip().lower()
     if tier not in ("free", "pro"):
-        raise HTTPException(400, "Invalid tier. Must be 'free' or 'pro'.")
+        api_error("INVALID_TIER", "Invalid tier. Must be 'free' or 'pro'.", 400)
 
     if tier == "pro":
         if not x_api_key:
-            raise HTTPException(401, "Pro mode requires your Anthropic API key in X-Api-Key header.")
+            api_error("KEY_REQUIRED", "Pro mode requires your Anthropic API key in X-Api-Key header.", 401)
         # Sanitize key — no injection possible but trim whitespace
         x_api_key = x_api_key.strip()
         result = await call_claude(req, x_api_key)

@@ -160,6 +160,43 @@
   padding: 1rem 1.25rem;
   height: 90px;
 }
+
+/* ── COLD START OVERLAY ── */
+#coldStartOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(4,4,11,.92);
+  backdrop-filter: blur(12px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  text-align: center;
+  padding: 2rem;
+}
+#coldStartOverlay.on { display: flex; }
+.cold-spinner {
+  width: 44px; height: 44px;
+  border: 2px solid rgba(255,255,255,.08);
+  border-top-color: rgba(255,255,255,.6);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+.cold-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; font-weight: 400;
+  color: #fff; letter-spacing: -.02em;
+}
+.cold-sub {
+  font-size: 13px; color: rgba(255,255,255,.4);
+  max-width: 340px; line-height: 1.65;
+}
+.cold-note {
+  font-size: 11px; color: rgba(255,255,255,.2);
+  max-width: 300px; line-height: 1.6;
+}
 </style>
 <style>
 :root {
@@ -966,8 +1003,27 @@ async function callClaude(messages, systemPrompt, maxTokens=4000) {
   if (systemPrompt) body.system = systemPrompt;
   const headers = { 'Content-Type': 'application/json', 'X-Tier': tier };
   if (tier === 'pro' && key) headers['X-Api-Key'] = key;
-  const res = await fetch('/api/analyze', { method:'POST', headers, body:JSON.stringify(body) });
-  if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.detail||'API error '+res.status); }
+  // Show cold-start overlay if request takes > 3 seconds
+  let coldTimer = setTimeout(() => {
+    const overlay = document.getElementById('coldStartOverlay');
+    if (overlay) overlay.classList.add('on');
+  }, 3000);
+
+  let res;
+  try {
+    res = await fetch('/api/analyze', { method:'POST', headers, body:JSON.stringify(body) });
+  } finally {
+    clearTimeout(coldTimer);
+    const overlay = document.getElementById('coldStartOverlay');
+    if (overlay) overlay.classList.remove('on');
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}));
+    const detail = err.detail;
+    const msg = (typeof detail === 'object' && detail?.message) ? detail.message : (detail || 'API error ' + res.status);
+    throw new Error(msg);
+  }
   return (await res.json()).content;
 }
 
@@ -1318,5 +1374,14 @@ gaps: 5-8 items by priority. Specific resources only.`;
 <style>
   #kofiBtn:hover { transform: translateY(-2px); background: rgba(255,255,255,.12); color: #fff; }
 </style>
+
+<!-- Cold start overlay -->
+<div id="coldStartOverlay">
+  <div class="cold-spinner"></div>
+  <div class="cold-title">Waking up the server…</div>
+  <div class="cold-sub">The backend spins down after 15 minutes of inactivity. It'll be ready in about 30 seconds.</div>
+  <div class="cold-note">Free cloud hosting — first request after a quiet period takes a moment. Everything after is fast.</div>
+</div>
+
 </body>
 </html>
