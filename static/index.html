@@ -641,9 +641,14 @@ select option{background:var(--surface2)}
 #jd,#resumeText{height:200px}
 }
 #kofiBtn:hover { transform: translateY(-2px); background: rgba(255,255,255,.12); color: #fff; }
+
+/* ── ACCESSIBILITY ── */
+.skip-nav{position:absolute;top:-100px;left:0;background:#fff;color:#000;padding:8px 16px;z-index:9999;font-size:14px;font-weight:600;text-decoration:none;border-radius:0 0 8px 0;transition:top .1s}
+.skip-nav:focus{top:0}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-nav">Skip to main content</a>
 <!-- ══ PERSISTENT APP VIDEO BG (always in DOM, shown when app is active) ══ -->
 <div id="appVideoBg" style="opacity:0;visibility:hidden;position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;transition:opacity .8s ease">
   <div class="app-bg-canvas">
@@ -698,15 +703,15 @@ select option{background:var(--surface2)}
 </section>
 
 <!-- ══════════════════ APP SHELL ══════════════════ -->
-<div class="app-shell" id="appShell">
+<div class="app-shell" id="appShell" role="application" aria-label="Jobsy resume optimizer">
 
   <nav class="nav gl-nav">
     <a class="logo" href="#" onclick="goHero()">
-      <img class="logo-img" src="/favicon.png" alt="Jobsy">
+      <img class="logo-img" src="/favicon.png" alt="Jobsy logo">
       <span class="logo-name">Jobsy</span>
     </a>
     <div class="nav-tabs gl-tabs">
-      <button class="nav-tab gl-tab active" onclick="switchPage('optimizer',this)">Optimizer</button>
+      <button class="nav-tab gl-tab active" onclick="switchPage('optimizer',this)" aria-label="Resume Optimizer tool">Optimizer</button>
       <button class="nav-tab gl-tab" onclick="switchPage('cover',this)">Cover Letter</button>
       <button class="nav-tab gl-tab" onclick="switchPage('linkedin',this)">Profile</button>
       <button class="nav-tab gl-tab" onclick="switchPage('jobs',this)">Job Match</button>
@@ -715,7 +720,7 @@ select option{background:var(--surface2)}
   </nav>
 
   <!-- ── OPTIMIZER ── -->
-  <div class="page active" id="page-optimizer">
+  <main class="page active" id="main-content page-optimizer" aria-label="Resume Optimizer">
 
     <div class="page-header">
       <div class="page-eyebrow">Resume Optimizer</div>
@@ -772,8 +777,23 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
-    <!-- Mode toggle lives OUTSIDE the grid so it doesn't offset the right column -->
-    <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+    <!-- Mode toggle + language selector -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em">Language</span>
+        <select id="resumeLang" style="background:rgba(0,0,0,.3);border:none;border-radius:7px;color:rgba(255,255,255,.8);font-family:'Inter',sans-serif;font-size:12px;padding:5px 10px;box-shadow:inset 0 1px 3px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.07);cursor:pointer">
+          <option value="English (UK)">English (UK)</option>
+          <option value="English (US)" selected>English (US)</option>
+          <option value="English (AUS)">English (Australia)</option>
+          <option value="English (CAN)">English (Canada)</option>
+          <option value="French">French</option>
+          <option value="German">German</option>
+          <option value="Spanish">Spanish</option>
+          <option value="Portuguese">Portuguese</option>
+          <option value="Dutch">Dutch</option>
+          <option value="Italian">Italian</option>
+        </select>
+      </div>
       <div class="mode-toggle">
         <button class="mode-btn on" onclick="setMode('text',this)">Paste text</button>
         <button class="mode-btn" onclick="setMode('pdf',this)">Upload PDF</button>
@@ -782,11 +802,11 @@ select option{background:var(--surface2)}
 
     <div class="input-grid">
       <div class="input-block">
-        <div class="input-label">The job you want</div>
+        <label class="input-label" for="jd">The job you want</label>
         <textarea id="jd" placeholder="Paste the job description here. The more detail the better."></textarea>
       </div>
       <div class="input-block">
-        <div class="input-label">Your current resume</div>
+        <label class="input-label" for="resumeText">Your current resume</label>
         <div id="text-mode">
           <textarea id="resumeText" placeholder="Paste it rough. Even a bullet-point draft works — we'll handle the rest."></textarea>
         </div>
@@ -812,7 +832,7 @@ select option{background:var(--surface2)}
     <div class="err-box" id="err"></div>
     <button class="run-btn gl-btn-primary" id="runBtn" onclick="runAll()">Analyze & rewrite my resume →</button>
 
-    <div class="progress-wrap" id="progress">
+    <div class="progress-wrap" id="progress" role="status" aria-live="polite" aria-label="Analysis progress">
       <div class="progress-label" id="progLabel">Starting…</div>
       <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
       <div class="progress-steps">
@@ -859,7 +879,7 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
-    <div class="results-wrap" id="results">
+    <div class="results-wrap" id="results" aria-live="polite">
       <div style="margin-bottom:1.25rem"><p style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3)">Analysis complete</p></div>
       <div class="scores-row">
         <div class="score-card"><div class="num" id="s1">—</div><div class="lbl">Overall match</div><div class="bar"><div class="bfill" id="b1" style="width:0%"></div></div></div>
@@ -928,13 +948,13 @@ select option{background:var(--surface2)}
   </div>
 
   <!-- ── COVER LETTER ── -->
-  <div class="page" id="page-cover">
+  <section class="page" id="page-cover" aria-label="Cover Letter Generator">
     <div class="tool-hero"><h2>Cover letter.</h2><p>Sounds like you. Not a template, not a robot. Tailored to the exact role and company.</p></div>
     <div class="apikey-panel gl-card"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab — it carries over.</p><div class="key-status key-unset" id="cover-key-status"><span class="dot"></span><span id="cover-key-text">No key set</span></div></div>
     <div class="tool-card gl-card">
       <div class="input-grid">
         <div class="input-block"><div class="input-label">Job description</div><textarea id="cover-jd" placeholder="Paste the job description…" style="min-height:170px"></textarea></div>
-        <div class="input-block"><div class="input-label">Your current resume</div><textarea id="cover-resume" placeholder="Paste your resume text…" style="min-height:170px"></textarea></div>
+        <div class="input-block"><label class="input-label" for="resumeText">Your current resume</label><textarea id="cover-resume" placeholder="Paste your resume text…" style="min-height:170px"></textarea></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
         <div class="input-block" style="flex:1;min-width:160px"><div class="input-label">Your name</div><input id="cover-name" type="text" placeholder="e.g. Priya Sharma"></div>
@@ -957,7 +977,7 @@ select option{background:var(--surface2)}
   </div>
 
   <!-- ── LINKEDIN ── -->
-  <div class="page" id="page-linkedin">
+  <section class="page" id="page-linkedin" aria-label="LinkedIn Profile Rewriter">
     <div class="tool-hero"><h2>LinkedIn, but sharper.</h2><p>Your headline, About section, and skills — rewritten for the role you actually want.</p></div>
     <div class="apikey-panel gl-card"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab.</p><div class="key-status key-unset" id="li-key-status"><span class="dot"></span><span id="li-key-text">No key set</span></div></div>
     <div class="tool-card gl-card">
@@ -972,10 +992,10 @@ select option{background:var(--surface2)}
   </div>
 
   <!-- ── JOB MATCH ── -->
-  <div class="page" id="page-jobs">
+  <section class="page" id="page-jobs" aria-label="Job Match Finder">
     <div class="tool-hero"><h2>Find the right jobs.</h2><p>Paste your resume. We pull out what you're good at and find live listings that actually match.</p></div>
     <div class="tool-card gl-card">
-      <div class="input-block" style="margin-bottom:14px"><div class="input-label">Your current resume</div><textarea id="jobs-resume" placeholder="Paste your resume…" style="min-height:150px"></textarea></div>
+      <div class="input-block" style="margin-bottom:14px"><label class="input-label" for="resumeText">Your current resume</label><textarea id="jobs-resume" placeholder="Paste your resume…" style="min-height:150px"></textarea></div>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
         <div class="input-block" style="flex:1;min-width:140px"><div class="input-label">Country</div>
           <select id="jobs-country">
@@ -995,13 +1015,13 @@ select option{background:var(--surface2)}
   </div>
 
   <!-- ── SKILL GAP ── -->
-  <div class="page" id="page-skills">
+  <section class="page" id="page-skills" aria-label="Skill Gap Analysis">
     <div class="tool-hero"><h2>Skill Gap Analysis</h2><p>Exactly what's missing and how to close each gap — with specific free resources.</p></div>
     <div class="apikey-panel gl-card"><div class="panel-title">API key required</div><p class="panel-hint">Set your key on the Optimizer tab.</p><div class="key-status key-unset" id="sg-key-status"><span class="dot"></span><span id="sg-key-text">No key set</span></div></div>
     <div class="tool-card gl-card">
       <div class="input-grid">
         <div class="input-block"><div class="input-label">Job description</div><textarea id="sg-jd" placeholder="Paste the job description…" style="min-height:160px"></textarea></div>
-        <div class="input-block"><div class="input-label">Your current resume</div><textarea id="sg-resume" placeholder="Paste your resume…" style="min-height:160px"></textarea></div>
+        <div class="input-block"><label class="input-label" for="resumeText">Your current resume</label><textarea id="sg-resume" placeholder="Paste your resume…" style="min-height:160px"></textarea></div>
       </div>
       <button class="tool-btn gl-btn-primary" id="sgBtn" onclick="skillGap()" style="margin-top:4px">Analyze skill gaps →</button>
     </div>
@@ -1199,7 +1219,7 @@ async function runAll() {
   if (!jd) { err.textContent='Please paste a job description.'; err.className='err-box on'; return; }
   if (isPDF && !pdfBase64) { err.textContent='Please upload your PDF.'; err.className='err-box on'; return; }
   if (!isPDF && !resumeTxt) { err.textContent='Please paste your resume.'; err.className='err-box on'; return; }
-  if (!getKey()) { err.textContent='Please enter your Anthropic API key above.'; document.getElementById('apikey-input').focus(); err.className='err-box on'; return; }
+  if (currentTier === 'pro' && !getKey()) { err.textContent='Pro mode requires your Anthropic API key — enter it in the Pro card above.'; document.getElementById('apikey-input') && document.getElementById('apikey-input').focus(); err.className='err-box on'; return; }
 
   document.getElementById('runBtn').disabled = true;
   document.getElementById('progress').className = 'progress-wrap on';
@@ -1222,17 +1242,24 @@ keywords: exactly 10. red_flags: exactly 5 — brutal specifics.`;
 
     setProgress(35,'Rewriting with Google XYZ formula…',3);
     const missing = (p1.keywords||[]).filter(k=>k.status==='miss'||k.status==='partial').map(k=>k.text).join(', ');
-    const p2sys = `You are an expert resume writer. Rewrite using the Google XYZ formula for every bullet: "Accomplished [X] as measured by [Y] by doing [Z]."
-RULES (violating any is unacceptable):
-1. NEVER fabricate any fact, metric, company, title, tech, date, or achievement not in the original.
+    const lang = document.getElementById('resumeLang')?.value || 'English (US)';
+const p2sys = `You are an expert resume writer. Rewrite using the Google XYZ formula for every bullet: "Accomplished [X] as measured by [Y] by doing [Z]."
+
+LANGUAGE: Write the entire resume in ${lang}. Use correct spelling, grammar, and phrasing for that language/locale (e.g. "organised" not "organized" for UK English, "behaviour" not "behavior", etc.)
+
+RULES — all mandatory:
+1. NEVER fabricate any fact, metric, company, title, technology, date, or achievement not in the original.
 2. Naturally weave in these missing keywords where genuinely supported: ${missing}
-3. Every bullet must have a measurable result. First 2 words = strongest part (action verb + outcome).
-4. Rewrite summary as a 3-sentence pitch: who they are, what they do best, why they fit this role. Top 3 keywords naturally.
-5. Update skills: remove irrelevant, add missing from JD where plausible.
-6. Output plain text only — no markdown, no tables, no columns. ATS-clean.
-7. Structure: Name & contact → Summary → Skills → Experience → Projects → Education → Certifications.
-8. Keep all original positions, dates, companies.
-Return ONLY the rewritten resume. No preamble.`;
+3. Every bullet must have a measurable result. If the original gives a percentage with no context (e.g. "improved efficiency by 20%"), convert it to a real-world metric instead (e.g. "reduced processing time from 4 hours to 48 minutes" — only if inferable from context, otherwise drop the percentage entirely rather than keep a meaningless one).
+4. NO double dashes (--). Use a full stop or comma instead.
+5. NO vague buzzwords: "improved operational efficiency", "increased decision making", "enhanced productivity", "leveraged synergies", "drove initiatives". Replace every one with a specific, concrete action and result.
+6. First 2 words of every bullet = strongest part. Start with a past-tense action verb + quantified outcome.
+7. Rewrite summary as a 3-sentence pitch: who they are, what they do best, why they fit this role. Top 3 keywords naturally.
+8. Update skills: remove irrelevant, add missing from JD where plausible.
+9. Output plain text only — no markdown, no tables, no columns, no special characters except hyphens for bullets. ATS-clean.
+10. Structure: Name & contact → Summary → Skills → Experience → Projects → Education → Certifications.
+11. Keep all original positions, dates, companies exactly as given.
+Return ONLY the rewritten resume. No preamble, no explanation.`;
     const p2input = isPDF
       ? [{type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfBase64}},{type:'text',text:`TARGET JOB:\n${jd}\n\nRewrite following all rules.`}]
       : `TARGET JOB:\n${jd}\n\nORIGINAL:\n${resumeTxt}\n\nRewrite following all rules.`;
@@ -1402,7 +1429,26 @@ async function generateCoverLetter() {
   
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Writing…';
   const result=document.getElementById('cover-result'); result.className='tool-result'; result.textContent='';
-  const sys=`Write a tailored cover letter for ${name}. Tone: ${tone}. 3-4 paragraphs. Opening: immediately state why this specific role at this company — no generic openers. Middle: 2-3 specific achievements from the resume that address JD requirements — real numbers if present. Closing: confident, not begging. No "I am writing to express interest." No "Please find attached." Sound like a real person. Return only the letter text.`;
+  const coverLang = document.getElementById('resumeLang')?.value || 'English (US)';
+const sys=`Write a tailored cover letter for ${name}. Language: ${coverLang}. Tone: ${tone}.
+
+STRUCTURE — 4 paragraphs:
+
+Opening: Start with something genuinely specific — something like "I've been following [Company] and was especially interested to see [specific thing from the JD or company news]." Never start with "I am writing to express my interest." Never start with "I am excited to apply."
+
+Second paragraph: Lead with the most relevant achievement from the resume. Use a phrase like "One of the more complex projects I led involved..." or "In my previous role, I..." — then give a specific result with real numbers, not vague percentages. Make it sound like a person talking, not a CV bullet point.
+
+Third paragraph: Connect the candidate's skills to the role's specific requirements. Use phrases like "One reason I'm excited about this opportunity is..." or "What draws me to this role specifically is..." — tie it to something concrete in the job description.
+
+Closing: Confident and direct. Something like "I'd welcome the chance to discuss how I could contribute — happy to jump on a call at your convenience." No "I look forward to hearing from you at your earliest convenience." No "Please do not hesitate to contact me."
+
+RULES:
+- No double dashes (--)
+- No buzzwords: "passionate", "dynamic", "synergy", "leverage", "hardworking", "team player"
+- Percentages only if they have clear context. Otherwise use absolute numbers or drop them.
+- Sound like a real person who actually wants this job, not a cover letter template
+- Use correct spelling and grammar for ${coverLang}
+- Return only the letter text. No subject line, no date, no address headers.`;
   try {
     const letter=await callClaude([{role:'user',content:`JOB:\n${jd}\n\nRESUME:\n${resume}`}],sys,1200);
     result.textContent=letter.trim(); result.className='tool-result on';
